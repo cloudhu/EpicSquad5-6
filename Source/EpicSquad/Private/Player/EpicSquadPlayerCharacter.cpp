@@ -1,11 +1,8 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "Player/EpicSquadPlayerCharacter.h"
-
 #include "NinjaCombatTags.h"
-
 #include "Camera/CameraComponent.h"
-
 #include "Components/ArrowComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/ImmersiveComponentBase.h"
@@ -14,12 +11,10 @@
 #include "Components/NinjaCombatManagerComponent.h"
 #include "Components/NinjaEquipmentManagerComponent.h"
 #include "Components/NinjaFactionComponent.h"
-
 #include "GameFramework/CharacterMovementComponent.h"
 
 AEpicSquadPlayerCharacter::AEpicSquadPlayerCharacter(const FObjectInitializer& ObjectInitializer): Super(
 	ObjectInitializer.SetDefaultSubobjectClass<UNinjaCombatCharacterMovementComponent>(CharacterMovementComponentName))
-
 {
 	// Set size for player capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
@@ -50,21 +45,7 @@ AEpicSquadPlayerCharacter::AEpicSquadPlayerCharacter(const FObjectInitializer& O
 
 	static const FName FactionComponentName = TEXT("FactionManager");
 	FactionManager = CreateOptionalDefaultSubobject<UNinjaFactionComponent>(FactionComponentName);
-	ImmersiveInteractionComponent = CreateOptionalDefaultSubobject<UImmersiveComponentBase>(TEXT("ImmersiveInteractionManager"));
-
-	// static ConstructorHelpers::FClassFinder<UImmersiveComponentBase>
-	// 	ImmersiveComponentBPClass(TEXT("/Game/Blueprints/Player/Components/BP_ImmersiveComponent"));
-	// if (ImmersiveComponentBPClass.Class != nullptr)
-	// {
-	// 	// 创建蓝图类的实例
-	// 	ImmersiveInteractionComponent = NewObject<UImmersiveComponentBase>(this, ImmersiveComponentBPClass.Class,TEXT("ImmersiveInteractionManager"));
-	// 	if (ImmersiveInteractionComponent != nullptr)
-	// 	{
-	// 		// 将组件添加到角色
-	// 		AddInstanceComponent(ImmersiveInteractionComponent);
-	// 		ImmersiveInteractionComponent->RegisterComponent();
-	// 	}
-	// }
+	// ImmersiveInteractionComponent = CreateOptionalDefaultSubobject<UImmersiveComponentBase>(TEXT("ImmersiveInteractionManager"));
 }
 
 

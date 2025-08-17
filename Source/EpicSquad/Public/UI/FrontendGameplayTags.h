@@ -1,0 +1,29 @@
+﻿// CloudHu:604746493@qq.com All Rights Reserved
+
+#pragma once
+
+
+#include "NativeGameplayTags.h"
+
+namespace FrontendGameplayTags
+{
+	//Layers
+	EPICSQUAD_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(UI_Layer_MainMenu);
+	EPICSQUAD_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(UI_Layer_GameMenu);
+	EPICSQUAD_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(UI_Layer_GameHud);
+	EPICSQUAD_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(UI_Layer_Modal);
+
+	//Widgets
+	//Frontend widgets
+	EPICSQUAD_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(UI_Widget_PressAnyKeyScreen);
+	EPICSQUAD_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(UI_Widget_MainMenuScreen);
+	EPICSQUAD_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(UI_Widget_OptionsScreen);
+
+	EPICSQUAD_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(UI_Widget_ConfirmScreen);
+
+	EPICSQUAD_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(UI_Widget_KeyRemapScreen);
+
+	//Frontend Options Image
+	EPICSQUAD_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(UI_Image_Logo);
+	
+}

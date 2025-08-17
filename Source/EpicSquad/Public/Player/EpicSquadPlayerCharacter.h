@@ -5,16 +5,13 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/NinjaGASPlayerCharacter.h"
-
 #include "Interfaces/CombatSystemInterface.h"
 #include "Interfaces/EquipmentSystemInterface.h"
 #include "Interfaces/FactionMemberInterface.h"
 #include "Interfaces/InputSetupProviderInterface.h"
-
 #include "EpicSquadPlayerCharacter.generated.h"
 
 
-class UImmersiveComponentBase;
 class UNinjaCombatEquipmentAdapterComponent;
 /**
  *  A controllable top-down perspective character
@@ -44,8 +41,8 @@ class EPICSQUAD_API AEpicSquadPlayerCharacter : public ANinjaGASPlayerCharacter,
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UNinjaFactionComponent> FactionManager;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = true))
-	TObjectPtr<UImmersiveComponentBase> ImmersiveInteractionComponent;
+	// UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = true))
+	// TObjectPtr<UImmersiveComponentBase> ImmersiveInteractionComponent;
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input Setup")
@@ -76,5 +73,5 @@ public:
 	virtual UNinjaFactionComponent* GetFactionComponent_Implementation() const override;
 	// -- End Faction Member implementation
 
-	UImmersiveComponentBase* GetImmersiveComponent() const { return ImmersiveInteractionComponent; }
+	// UImmersiveComponentBase* GetImmersiveComponent() const { return ImmersiveInteractionComponent; }
 };

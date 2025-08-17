@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="VcsDirectoryMappings">
+    <mapping directory="$PROJECT_DIR$" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Plugins/NinjaBearStudio/NinjaCombat" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Plugins/NinjaBearStudio/NinjaInput" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Plugins/NinjaBearStudio/NinjaInventory" vcs="Git" />
+  </component>
+</project>

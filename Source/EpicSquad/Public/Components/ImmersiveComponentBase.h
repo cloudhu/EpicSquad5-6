@@ -32,11 +32,12 @@ public:
 	void SetAxisForward(float InAxisForward);
 	
 	void SetAxisRight(float InAxisRight);
+	
 protected:
-	UPROPERTY(Transient,BlueprintReadWrite,Category=Immersive)
+	UPROPERTY(BlueprintReadWrite,Category=Immersive)
 	float AxisForward=0.f;
 
-	UPROPERTY(Transient,BlueprintReadWrite,Category=Immersive)
+	UPROPERTY(BlueprintReadWrite,Category=Immersive)
 	float AxisRight=0.f;
 		
 };

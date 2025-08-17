@@ -17,35 +17,34 @@ class EPICSQUAD_API UIH_PlayerMove : public UNinjaInputHandler
 public:
 	UIH_PlayerMove();
 
-	protected:
-
+protected:
 	/** Applies movement in world space, which can be useful for locomotion testing. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Move")
 	bool bUseWorldSpace;
-	
+
 	/**
 	 * Minimum magnitude required for the movement to be accepted.
 	 * This is only relevant for analog input from a gamepad.
 	 */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Move")
 	float MinimumMagnitudeToMove;
-	
+
 	/** If any of these tags are present, movement is blocked. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Move")
 	FGameplayTagContainer BlockMovementTags;
-	
+
 	virtual void HandleTriggeredEvent_Implementation(UNinjaInputManagerComponent* Manager, const FInputActionValue& Value,
-		const UInputAction* InputAction, float ElapsedTime) const override;
+	                                                 const UInputAction* InputAction, float ElapsedTime) const override;
 
 	virtual void HandleOngoingEvent_Implementation(UNinjaInputManagerComponent* Manager, const FInputActionValue& Value,
-		const UInputAction* InputAction, float ElapsedTime) const override;
+	                                               const UInputAction* InputAction, float ElapsedTime) const override;
 
 	/**
 	 * Checks if the character is allowed to move.
 	 */
-	UFUNCTION(BlueprintNativeEvent, Category = "Move")	
+	UFUNCTION(BlueprintNativeEvent, Category = "Move")
 	bool CanMove(UNinjaInputManagerComponent* Manager, const FInputActionValue& Value) const;
-	
+
 	/**
 	 * Effective implementation for moving a character.
 	 *
@@ -62,7 +61,6 @@ public:
 	 * @param InputValue	Event magnitude applied to the movement.
 	 * @return				The scaled input value.
 	 */
-	UFUNCTION(BlueprintNativeEvent, Category = "Move")
+	UFUNCTION(BlueprintNativeEvent,BlueprintCallable, Category = "Move")
 	FVector2D GetMovementInputScaleValue(const UNinjaInputManagerComponent* Manager, const FVector2D& InputValue) const;
-	
 };

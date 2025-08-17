@@ -2,12 +2,8 @@
 
 
 #include "Player/InputHandlers/IH_PlayerMove.h"
-
 #include "NinjaInputTags.h"
-
-#include "Components/ImmersiveComponentBase.h"
 #include "Components/NinjaInputManagerComponent.h"
-
 #include "Player/EpicSquadPlayerCharacter.h"
 
 UIH_PlayerMove::UIH_PlayerMove()
@@ -43,8 +39,7 @@ void UIH_PlayerMove::HandleOngoingEvent_Implementation(UNinjaInputManagerCompone
 
 FVector2D UIH_PlayerMove::GetMovementInputScaleValue_Implementation(const UNinjaInputManagerComponent* Manager, const FVector2D& InputValue) const
 {
-	const EInputAnalogStickBehavior AnalogStickBehavior = Manager->GetAnalogStickBehavior();
-	switch (AnalogStickBehavior)
+	switch (Manager->GetAnalogStickBehavior())
 	{
 	case EInputAnalogStickBehavior::FixedSpeed_SingleGait:
 	case EInputAnalogStickBehavior::FixedSpeed_WalkRun:
@@ -78,11 +73,11 @@ void UIH_PlayerMove::Move_Implementation(UNinjaInputManagerComponent* Manager, c
 
 			const FVector RightDirection = FVector::RightVector;
 			Pawn->AddMovementInput(RightDirection, InputValue[0]);
-			if (const AEpicSquadPlayerCharacter* Player = Cast<AEpicSquadPlayerCharacter>(Pawn))
-			{
-				Player->GetImmersiveComponent()->SetAxisForward(InputValue[1]);
-				Player->GetImmersiveComponent()->SetAxisRight(InputValue[0]);
-			}
+			// if (const AEpicSquadPlayerCharacter* Player = Cast<AEpicSquadPlayerCharacter>(Pawn))
+			// {
+			// 	Player->GetImmersiveComponent()->SetAxisForward(InputValue[1]);
+			// 	Player->GetImmersiveComponent()->SetAxisRight(InputValue[0]);
+			// }
 		}
 		else
 		{
@@ -94,11 +89,11 @@ void UIH_PlayerMove::Move_Implementation(UNinjaInputManagerComponent* Manager, c
 			const FVector RightDirection = Manager->GetRightVector();
 			Pawn->AddMovementInput(RightDirection, InputValue[0]);
 
-			if (const AEpicSquadPlayerCharacter* Player = Cast<AEpicSquadPlayerCharacter>(Pawn))
-			{
-				Player->GetImmersiveComponent()->SetAxisForward(InputValue[1]);
-				Player->GetImmersiveComponent()->SetAxisRight(InputValue[0]);
-			}
+			// if (const AEpicSquadPlayerCharacter* Player = Cast<AEpicSquadPlayerCharacter>(Pawn))
+			// {
+			// 	Player->GetImmersiveComponent()->SetAxisForward(InputValue[1]);
+			// 	Player->GetImmersiveComponent()->SetAxisRight(InputValue[0]);
+			// }
 		}
 	}
 }
