@@ -5,6 +5,8 @@
 #include "CommonActivatableWidget.h"
 #include "CommonMessagingSubsystem.h"
 
+#include "UI/CommonGame/Widget_ActivatableBase.h"
+
 #include "CommonGameDialog.generated.h"
 
 #define UE_API EPICSQUAD_API
@@ -57,7 +59,7 @@ public:
 
 
 UCLASS(MinimalAPI, Abstract)
-class UCommonGameDialog : public UCommonActivatableWidget
+class UCommonGameDialog : public UWidget_ActivatableBase
 {
 	GENERATED_BODY()
 	

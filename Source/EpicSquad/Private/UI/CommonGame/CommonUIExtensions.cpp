@@ -4,9 +4,7 @@
 #include "UI/CommonGame/CommonUIExtensions.h"
 #include "CommonInputSubsystem.h"
 #include "Blueprint/UserWidget.h"
-
 #include "GameSettings/EpicDeveloperSettings.h"
-
 #include "UI/CommonGame/FrontendManagerSubsystem.h"
 #include "UI/CommonGame/PrimaryGameLayout.h"
 
@@ -51,8 +49,8 @@ bool UCommonUIExtensions::IsOwningPlayerUsingGamepad(const UUserWidget* WidgetCo
 	return false;
 }
 
-UCommonActivatableWidget* UCommonUIExtensions::PushContentToLayer_ForPlayer(const ULocalPlayer* LocalPlayer, FGameplayTag LayerName,
-	TSubclassOf<UCommonActivatableWidget> WidgetClass)
+UWidget_ActivatableBase* UCommonUIExtensions::PushContentToLayer_ForPlayer(const ULocalPlayer* LocalPlayer, FGameplayTag LayerName,
+	TSubclassOf<UWidget_ActivatableBase> WidgetClass)
 {
 	if (!ensure(LocalPlayer) || !ensure(WidgetClass != nullptr))
 	{
@@ -71,7 +69,7 @@ UCommonActivatableWidget* UCommonUIExtensions::PushContentToLayer_ForPlayer(cons
 }
 
 void UCommonUIExtensions::PushStreamedContentToLayer_ForPlayer(const ULocalPlayer* LocalPlayer, FGameplayTag LayerName,
-	TSoftClassPtr<UCommonActivatableWidget> WidgetClass)
+	TSoftClassPtr<UWidget_ActivatableBase> WidgetClass)
 {
 	if (!ensure(LocalPlayer) || !ensure(!WidgetClass.IsNull()))
 	{
@@ -87,7 +85,7 @@ void UCommonUIExtensions::PushStreamedContentToLayer_ForPlayer(const ULocalPlaye
 	}
 }
 
-void UCommonUIExtensions::PopContentFromLayer(UCommonActivatableWidget* ActivatableWidget)
+void UCommonUIExtensions::PopContentFromLayer(UWidget_ActivatableBase* ActivatableWidget)
 {
 	if (!ActivatableWidget)
 	{

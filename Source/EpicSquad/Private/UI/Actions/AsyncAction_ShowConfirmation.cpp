@@ -47,17 +47,17 @@ void UAsyncAction_ShowConfirmation::Activate()
 {
 	if (WorldContextObject && !TargetLocalPlayer)
 	{
-		if (UUserWidget* UserWidget = Cast<UUserWidget>(WorldContextObject))
+		if (const UUserWidget* UserWidget = Cast<UUserWidget>(WorldContextObject))
 		{
 			TargetLocalPlayer = UserWidget->GetOwningLocalPlayer<ULocalPlayer>();
 		}
-		else if (APlayerController* PC = Cast<APlayerController>(WorldContextObject))
+		else if (const APlayerController* PC = Cast<APlayerController>(WorldContextObject))
 		{
 			TargetLocalPlayer = PC->GetLocalPlayer();
 		}
-		else if (UWorld* World = WorldContextObject->GetWorld())
+		else if (const UWorld* World = WorldContextObject->GetWorld())
 		{
-			if (UGameInstance* GameInstance = World->GetGameInstance<UGameInstance>())
+			if (const UGameInstance* GameInstance = World->GetGameInstance<UGameInstance>())
 			{
 				TargetLocalPlayer = GameInstance->GetPrimaryPlayerController(false)->GetLocalPlayer();
 			}
@@ -68,7 +68,7 @@ void UAsyncAction_ShowConfirmation::Activate()
 	{
 		if (UCommonMessagingSubsystem* Messaging = TargetLocalPlayer->GetSubsystem<UCommonMessagingSubsystem>())
 		{
-			FCommonMessagingResultDelegate ResultCallback = FCommonMessagingResultDelegate::CreateUObject(this, &UAsyncAction_ShowConfirmation::HandleConfirmationResult);
+			const FCommonMessagingResultDelegate ResultCallback = FCommonMessagingResultDelegate::CreateUObject(this, &UAsyncAction_ShowConfirmation::HandleConfirmationResult);
 			Messaging->ShowConfirmation(Descriptor, ResultCallback);
 			return;
 		}

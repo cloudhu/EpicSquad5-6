@@ -55,7 +55,7 @@ void UPrimaryGameLayout::SetIsDormant(bool InDormant)
 	}
 }
 
-void UPrimaryGameLayout::FindAndRemoveWidgetFromLayer(UCommonActivatableWidget* ActivatableWidget)
+void UPrimaryGameLayout::FindAndRemoveWidgetFromLayer(UWidget_ActivatableBase* ActivatableWidget)
 {
 	// We're not sure what layer the widget is on so go searching.
 	for (const auto& LayerKvp : Layers)
@@ -77,7 +77,7 @@ void UPrimaryGameLayout::RegisterLayer(FGameplayTag LayerTag, UCommonActivatable
 		// TODO: Consider allowing a transition duration, we currently set it to 0, because if it's not 0, the
 		//       transition effect will cause focus to not transition properly to the new widgets when using
 		//       gamepad always.
-		LayerWidget->SetTransitionDuration(0.0);
+		//LayerWidget->SetTransitionDuration(0.2);
 
 		Layers.Add(LayerTag, LayerWidget);
 	}

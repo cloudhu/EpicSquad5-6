@@ -10,14 +10,13 @@ namespace UIGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(UI_Layer_MainMenu,"UI.Layer.MainMenu");
 	UE_DEFINE_GAMEPLAY_TAG(UI_Layer_GameMenu,"UI.Layer.GameMenu");
 	UE_DEFINE_GAMEPLAY_TAG(UI_Layer_GameHud,"UI.Layer.GameHud");
-	UE_DEFINE_GAMEPLAY_TAG(UI_Layer_Modal,"UI.Layer.Modal");
 
 	//UI widgets
 	UE_DEFINE_GAMEPLAY_TAG(UI_Widget_PressAnyKeyScreen,"UI.Widget.PressAnyKeyScreen");
 	UE_DEFINE_GAMEPLAY_TAG(UI_Widget_MainMenuScreen,"UI.Widget.MainMenuScreen");
 	UE_DEFINE_GAMEPLAY_TAG(UI_Widget_OptionsScreen,"UI.Widget.OptionsScreen");
 
-	UE_DEFINE_GAMEPLAY_TAG(UI_Widget_ConfirmScreen,"UI.Widget.ConfirmScreen");
+
 
 	UE_DEFINE_GAMEPLAY_TAG(UI_Widget_KeyRemapScreen,"UI.Widget.KeyRemapScreen");
 

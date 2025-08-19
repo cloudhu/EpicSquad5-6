@@ -14,7 +14,8 @@ UAsyncAction_PushContentToLayerForPlayer::UAsyncAction_PushContentToLayerForPlay
 {
 }
 
-UAsyncAction_PushContentToLayerForPlayer* UAsyncAction_PushContentToLayerForPlayer::PushContentToLayerForPlayer(APlayerController* InOwningPlayer, TSoftClassPtr<UCommonActivatableWidget> InWidgetClass, FGameplayTag InLayerName, bool bSuspendInputUntilComplete)
+UAsyncAction_PushContentToLayerForPlayer* UAsyncAction_PushContentToLayerForPlayer::PushContentToLayerForPlayer(
+	APlayerController* InOwningPlayer, TSoftClassPtr<UWidget_ActivatableBase> InWidgetClass, FGameplayTag InLayerName, bool bSuspendInputUntilComplete)
 {
 	if (InWidgetClass.IsNull())
 	{
@@ -53,29 +54,37 @@ void UAsyncAction_PushContentToLayerForPlayer::Activate()
 	if (UPrimaryGameLayout* RootLayout = UPrimaryGameLayout::GetPrimaryGameLayout(OwningPlayerPtr.Get()))
 	{
 		TWeakObjectPtr<UAsyncAction_PushContentToLayerForPlayer> WeakThis = this;
-		StreamingHandle = RootLayout->PushWidgetToLayerStackAsync<UCommonActivatableWidget>(LayerName, bSuspendInputUntilComplete, WidgetClass, [this, WeakThis](EAsyncWidgetLayerState State, UCommonActivatableWidget* Widget) {
-			if (WeakThis.IsValid())
+		StreamingHandle = RootLayout->PushWidgetToLayerStackAsync<UWidget_ActivatableBase>(
+			LayerName, bSuspendInputUntilComplete, WidgetClass,
+			[this, WeakThis](
+			const EAsyncWidgetLayerState State, UWidget_ActivatableBase* Widget)
 			{
-				switch (State)
+				if (WeakThis.IsValid())
 				{
+					switch (State)
+					{
 					case EAsyncWidgetLayerState::Initialize:
 						BeforePush.Broadcast(Widget);
 						break;
 					case EAsyncWidgetLayerState::AfterPush:
+						if (UWidget* WidgetToFocus = Widget->
+							GetDesiredFocusTarget())
+						{
+							WidgetToFocus->SetFocus();
+						}
 						AfterPush.Broadcast(Widget);
 						SetReadyToDestroy();
 						break;
 					case EAsyncWidgetLayerState::Canceled:
 						SetReadyToDestroy();
 						break;
+					}
 				}
-			}
-			SetReadyToDestroy();
-		});
+				SetReadyToDestroy();
+			});
 	}
 	else
 	{
 		SetReadyToDestroy();
 	}
 }
-

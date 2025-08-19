@@ -10,13 +10,13 @@
 
 #define UE_API EPICSQUAD_API
 
+class UWidget_ActivatableBase;
 class APlayerController;
-class UCommonActivatableWidget;
 class UObject;
 struct FFrame;
 struct FStreamableHandle;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FPushContentToLayerForPlayerAsyncDelegate, UCommonActivatableWidget*, UserWidget);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FPushContentToLayerForPlayerAsyncDelegate, UWidget_ActivatableBase*, UserWidget);
 
 /**
  * 
@@ -30,7 +30,7 @@ public:
 	UE_API virtual void Cancel() override;
 
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, meta=(WorldContext = "WorldContextObject", BlueprintInternalUseOnly="true"))
-	static UE_API UAsyncAction_PushContentToLayerForPlayer* PushContentToLayerForPlayer(APlayerController* OwningPlayer, UPARAM(meta = (AllowAbstract=false)) TSoftClassPtr<UCommonActivatableWidget> WidgetClass, UPARAM(meta = (Categories = "UI.Layer")) FGameplayTag LayerName, bool bSuspendInputUntilComplete = true);
+	static UE_API UAsyncAction_PushContentToLayerForPlayer* PushContentToLayerForPlayer(APlayerController* OwningPlayer, UPARAM(meta = (AllowAbstract=false)) TSoftClassPtr<UWidget_ActivatableBase> WidgetClass, UPARAM(meta = (Categories = "UI.Layer")) FGameplayTag LayerName, bool bSuspendInputUntilComplete = true);
 
 	UE_API virtual void Activate() override;
 
@@ -47,7 +47,7 @@ private:
 	FGameplayTag LayerName;
 	bool bSuspendInputUntilComplete = false;
 	TWeakObjectPtr<APlayerController> OwningPlayerPtr;
-	TSoftClassPtr<UCommonActivatableWidget> WidgetClass;
+	TSoftClassPtr<UWidget_ActivatableBase> WidgetClass;
 
 	TSharedPtr<FStreamableHandle> StreamingHandle;
 };
