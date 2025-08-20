@@ -43,12 +43,18 @@ public class EpicSquad : ModuleRules
 			"NinjaInventoryEquipment",
 			"CommonInput",
 			"NinjaFactions",
+			"AsyncMixin",
+			"GameSettings",
+			"GameSubtitles",
+			"CommonLoadingScreen",
 		]);
 
 		PrivateDependencyModuleNames.AddRange([
 			"Slate",
 			"SlateCore",
-			"GameplayTags"
+			"GameplayTags",
+			"AudioModulation",
+			"AudioMixer",
 		]);
 
 		// Uncomment if you are using Slate UI

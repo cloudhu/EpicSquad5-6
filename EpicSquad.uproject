@@ -153,6 +153,22 @@
 		{
 			"Name": "BlueprintFileUtils",
 			"Enabled": true
+		},
+		{
+			"Name": "AsyncMixin",
+			"Enabled": true
+		},
+		{
+			"Name": "GameSettings",
+			"Enabled": true
+		},
+		{
+			"Name": "GameSubtitles",
+			"Enabled": true
+		},
+		{
+			"Name": "CommonLoadingScreen",
+			"Enabled": true
 		}
 	]
 }
