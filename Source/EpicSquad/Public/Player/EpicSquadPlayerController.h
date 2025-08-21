@@ -3,6 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
+#include "GameFramework/NinjaFactionPlayerController.h"
 #include "GameFramework/PlayerController.h"
 #include "EpicSquadPlayerController.generated.h"
 
@@ -13,7 +15,7 @@ class UNinjaInputManagerComponent;
  *  Implements point and click based controls
  */
 UCLASS(abstract)
-class EPICSQUAD_API AEpicSquadPlayerController : public APlayerController
+class EPICSQUAD_API AEpicSquadPlayerController : public ANinjaFactionPlayerController
 {
 	GENERATED_BODY()
 
@@ -23,6 +25,7 @@ public:
 	/** Constructor */
 	AEpicSquadPlayerController();
 
+	void ResetTeam() const;
 private:
 
 	/** Manages player input, using Enhanced Input/Ninja Input. */

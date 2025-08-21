@@ -3,9 +3,9 @@
 #pragma once
 
 #include "Engine/DataTable.h"
-#include "UI/Messaging/CommonGameDialog.h"
+#include "Messaging/CommonGameDialog.h"
 
-#include "UI/Messaging/CommonMessagingSubsystem.h"
+#include "Messaging/CommonMessagingSubsystem.h"
 #include "LyraConfirmationScreen.generated.h"
 
 class IWidgetCompilerLog;

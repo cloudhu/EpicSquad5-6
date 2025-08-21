@@ -9,6 +9,7 @@
 
 #include "PlayerState_Base.generated.h"
 
+class AEpicSquadPlayerController;
 /**
  * 
  */
@@ -22,6 +23,8 @@ public:
 	// -- Begin InventorySystem implementation
 	virtual UNinjaInventoryManagerComponent* GetInventoryManager_Implementation() const override;
 	// -- End InventorySystem implementation
+
+	AEpicSquadPlayerController* GetEpicSquadPC() const;
 private:
 
 	/** Inventory Manager component. */
