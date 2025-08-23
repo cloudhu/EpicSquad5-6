@@ -65,7 +65,7 @@ enum class ELyraFramePacingMode : uint8
 };
 
 UCLASS(config=Game, defaultconfig)
-class ULyraPlatformSpecificRenderingSettings : public UPlatformSettings
+class EPICSQUAD_API ULyraPlatformSpecificRenderingSettings : public UPlatformSettings
 {
 	GENERATED_BODY()
 
@@ -118,7 +118,7 @@ public:
  * Project-specific performance profile settings.
  */
 UCLASS(config=Game, defaultconfig, meta=(DisplayName="Lyra Performance Settings"))
-class ULyraPerformanceSettings : public UDeveloperSettingsBackedByCVars
+class EPICSQUAD_API ULyraPerformanceSettings : public UDeveloperSettingsBackedByCVars
 {
 	GENERATED_BODY()
 

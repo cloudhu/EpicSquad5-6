@@ -9,7 +9,7 @@
 class UObject;
 
 UCLASS()
-class ALyraTeamPrivateInfo : public ALyraTeamInfoBase
+class EPICSQUAD_API ALyraTeamPrivateInfo : public ALyraTeamInfoBase
 {
 	GENERATED_BODY()
 

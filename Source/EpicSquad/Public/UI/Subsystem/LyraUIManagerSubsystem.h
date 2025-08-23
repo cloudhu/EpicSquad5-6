@@ -11,7 +11,7 @@ class FSubsystemCollectionBase;
 class UObject;
 
 UCLASS()
-class ULyraUIManagerSubsystem : public UGameUIManagerSubsystem
+class EPICSQUAD_API ULyraUIManagerSubsystem : public UGameUIManagerSubsystem
 {
 	GENERATED_BODY()
 

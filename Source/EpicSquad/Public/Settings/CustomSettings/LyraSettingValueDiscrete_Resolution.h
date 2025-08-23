@@ -12,7 +12,7 @@ class UObject;
 struct FScreenResolutionRHI;
 
 UCLASS()
-class ULyraSettingValueDiscrete_Resolution : public UGameSettingValueDiscrete
+class EPICSQUAD_API ULyraSettingValueDiscrete_Resolution : public UGameSettingValueDiscrete
 {
 	GENERATED_BODY()
 	

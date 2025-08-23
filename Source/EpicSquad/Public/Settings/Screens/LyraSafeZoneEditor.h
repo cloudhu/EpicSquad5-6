@@ -22,7 +22,7 @@ struct FGeometry;
 struct FPointerEvent;
 
 UCLASS(Abstract)
-class ULyraSafeZoneEditor : public UCommonActivatableWidget, public IGameSettingActionInterface
+class EPICSQUAD_API ULyraSafeZoneEditor : public UCommonActivatableWidget, public IGameSettingActionInterface
 {
 	GENERATED_BODY()
 

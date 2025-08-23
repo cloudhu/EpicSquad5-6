@@ -19,7 +19,7 @@ class UCommonBorder;
  *	
  */
 UCLASS(Abstract, BlueprintType, Blueprintable)
-class ULyraConfirmationScreen : public UCommonGameDialog
+class EPICSQUAD_API ULyraConfirmationScreen : public UCommonGameDialog
 {
 	GENERATED_BODY()
 public:

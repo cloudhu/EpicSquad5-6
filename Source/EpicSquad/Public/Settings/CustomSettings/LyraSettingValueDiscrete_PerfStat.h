@@ -12,7 +12,7 @@ enum class ELyraStatDisplayMode : uint8;
 class UObject;
 
 UCLASS()
-class ULyraSettingValueDiscrete_PerfStat : public UGameSettingValueDiscrete
+class EPICSQUAD_API ULyraSettingValueDiscrete_PerfStat : public UGameSettingValueDiscrete
 {
 	GENERATED_BODY()
 	

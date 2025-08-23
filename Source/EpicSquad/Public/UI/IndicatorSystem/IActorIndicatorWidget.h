@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UObject/ObjectMacros.h"
 #include "UObject/Interface.h"
 
 #include "IActorIndicatorWidget.generated.h"
@@ -17,7 +16,7 @@ class UIndicatorWidgetInterface : public UInterface
 	GENERATED_BODY()
 };
 
-class IIndicatorWidgetInterface
+class EPICSQUAD_API IIndicatorWidgetInterface
 {
 	GENERATED_BODY()
 

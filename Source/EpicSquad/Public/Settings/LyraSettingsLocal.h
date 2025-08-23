@@ -3,8 +3,6 @@
 #pragma once
 
 #include "GameFramework/GameUserSettings.h"
-#include "InputCoreTypes.h"
-
 #include "LyraSettingsLocal.generated.h"
 
 enum class ECommonInputType : uint8;
@@ -33,12 +31,11 @@ struct FLyraScalabilitySnapshot
  * ULyraSettingsLocal
  */
 UCLASS()
-class ULyraSettingsLocal : public UGameUserSettings
+class EPICSQUAD_API ULyraSettingsLocal : public UGameUserSettings
 {
 	GENERATED_BODY()
 
 public:
-
 	ULyraSettingsLocal();
 
 	static ULyraSettingsLocal* Get();
@@ -66,8 +63,10 @@ public:
 
 public:
 	void SetShouldUseFrontendPerformanceSettings(bool bInFrontEnd);
+
 protected:
 	bool ShouldUseFrontendPerformanceSettings() const;
+
 private:
 	bool bInFrontEndForPerformancePurposes = false;
 
@@ -76,39 +75,42 @@ private:
 public:
 	/** Returns the display mode for the specified performance stat */
 	ELyraStatDisplayMode GetPerfStatDisplayState(ELyraDisplayablePerformanceStat Stat) const;
-	
+
 	/** Sets the display mode for the specified performance stat */
 	void SetPerfStatDisplayState(ELyraDisplayablePerformanceStat Stat, ELyraStatDisplayMode DisplayMode);
 
 	/** Fired when the display state for a performance stat has changed, or the settings are applied */
 	DECLARE_EVENT(ULyraSettingsLocal, FPerfStatSettingsChanged);
+
 	FPerfStatSettingsChanged& OnPerfStatDisplayStateChanged() { return PerfStatSettingsChangedEvent; }
 
 	// Latency flash indicators
 	static bool DoesPlatformSupportLatencyMarkers();
-	
+
 	DECLARE_EVENT(ULyraSettingsLocal, FLatencyFlashInidicatorSettingChanged);
+
 	UFUNCTION()
 	void SetEnableLatencyFlashIndicators(const bool bNewVal);
 	UFUNCTION()
 	bool GetEnableLatencyFlashIndicators() const { return bEnableLatencyFlashIndicators; }
-	FLatencyFlashInidicatorSettingChanged& OnLatencyFlashInidicatorSettingsChangedEvent() { return LatencyFlashInidicatorSettingsChangedEvent; }
+
+	FLatencyFlashInidicatorSettingChanged& OnLatencyFlashIndicatorSettingsChangedEvent() { return LatencyFlashInidicatorSettingsChangedEvent; }
 
 	// Latency tracking stats
 	static bool DoesPlatformSupportLatencyTrackingStats();
-	
+
 	DECLARE_EVENT(ULyraSettingsLocal, FLatencyStatEnabledSettingChanged);
+
 	FLatencyStatEnabledSettingChanged& OnLatencyStatIndicatorSettingsChangedEvent() { return LatencyStatIndicatorSettingsChangedEvent; }
-	
+
 	UFUNCTION()
 	void SetEnableLatencyTrackingStats(const bool bNewVal);
 	UFUNCTION()
 	bool GetEnableLatencyTrackingStats() const { return bEnableLatencyTrackingStats; }
 
 private:
-
 	void ApplyLatencyTrackingStatSetting();
-	
+
 	// List of stats to display in the HUD
 	UPROPERTY(Config)
 	TMap<ELyraDisplayablePerformanceStat, ELyraStatDisplayMode> DisplayStatList;
@@ -142,7 +144,7 @@ public:
 
 private:
 	void ApplyDisplayGamma();
-	
+
 	UPROPERTY(Config)
 	float DisplayGamma = 2.2;
 
@@ -183,7 +185,6 @@ private:
 	//////////////////////////////////////////////////////////////////
 	// Display - Mobile quality settings
 public:
-	
 	static int32 GetDefaultMobileFrameRate();
 	static int32 GetMaxMobileFrameRate();
 
@@ -207,7 +208,7 @@ private:
 
 	void ClampMobileFPSQualityLevels(bool bWriteBack);
 	void ClampMobileQuality();
-	
+
 	int32 GetHighestLevelOfAnyScalabilityChannel() const;
 
 	/* Modifies the input levels based on the active mode's overrides */
@@ -232,7 +233,6 @@ private:
 	int32 DesiredMobileFrameRateLimit = 0;
 
 private:
-
 	//////////////////////////////////////////////////////////////////
 	// Display - Console quality presets
 public:
@@ -245,11 +245,11 @@ protected:
 	/** Updates device profiles, FPS mode etc for the current game mode */
 	void UpdateGameModeDeviceProfileAndFps();
 
-	void UpdateConsoleFramePacing();
+	static void UpdateConsoleFramePacing();
 	void UpdateDesktopFramePacing();
 	void UpdateMobileFramePacing();
 
-	void UpdateDynamicResFrameTime(float TargetFPS);
+	static void UpdateDynamicResFrameTime(float TargetFPS);
 
 private:
 	UPROPERTY(Transient)
@@ -265,9 +265,9 @@ private:
 	// Audio - Volume
 public:
 	DECLARE_EVENT_OneParam(ULyraSettingsLocal, FAudioDeviceChanged, const FString& /*DeviceId*/);
+
 	FAudioDeviceChanged OnAudioOutputDeviceChanged;
 
-public:
 	/** Returns if we're using headphone mode (HRTF) **/
 	UFUNCTION()
 	bool IsHeadphoneModeEnabled() const;
@@ -278,7 +278,7 @@ public:
 
 	/** Returns if we can enable/disable headphone mode (i.e., if it's not forced on or off by the platform) */
 	UFUNCTION()
-	bool CanModifyHeadphoneModeEnabled() const;
+	static bool CanModifyHeadphoneModeEnabled();
 
 public:
 	/** Whether we *want* to use headphone mode (HRTF); may or may not actually be applied **/
@@ -317,7 +317,7 @@ public:
 	void RunAutoBenchmark(bool bSaveImmediately);
 
 	/** Apply just the quality scalability settings */
-	void ApplyScalabilitySettings();
+	void ApplyScalabilitySettings() const;
 
 	UFUNCTION()
 	float GetOverallVolume() const;
@@ -358,28 +358,34 @@ public:
 private:
 	UPROPERTY(Config)
 	FString AudioOutputDeviceId;
-	
-	void SetVolumeForSoundClass(FName ChannelName, float InVolume);
-	
+
+	//void SetVolumeForSoundClass(FName ChannelName, float InVolume);
+
 
 	//////////////////////////////////////////////////////////////////
 	// Safezone
 public:
 	UFUNCTION()
 	bool IsSafeZoneSet() const { return SafeZoneScale != -1; }
+
 	UFUNCTION()
 	float GetSafeZone() const { return SafeZoneScale >= 0 ? SafeZoneScale : 0; }
-	UFUNCTION()
-	void SetSafeZone(float Value) { SafeZoneScale = Value; ApplySafeZoneScale(); }
 
-	void ApplySafeZoneScale();
+	UFUNCTION()
+	void SetSafeZone(const float Value)
+	{
+		SafeZoneScale = Value;
+		ApplySafeZoneScale();
+	}
+
+	void ApplySafeZoneScale() const;
+
 private:
 	void SetVolumeForControlBus(USoundControlBus* InSoundControlBus, float InVolume);
 
 	//////////////////////////////////////////////////////////////////
 	// Keybindings
 public:
-	
 	// Sets the controller representation to use, a single platform might support multiple kinds of controllers.  For
 	// example, Win64 games could be played with both an XBox or Playstation controller.
 	UFUNCTION()
@@ -430,29 +436,27 @@ private:
 
 	// Replays
 public:
-
 	UFUNCTION()
 	bool ShouldAutoRecordReplays() const { return bShouldAutoRecordReplays; }
+
 	UFUNCTION()
-	void SetShouldAutoRecordReplays(bool bEnabled) { bShouldAutoRecordReplays = bEnabled;}
+	void SetShouldAutoRecordReplays(bool bEnabled) { bShouldAutoRecordReplays = bEnabled; }
 
 	UFUNCTION()
 	int32 GetNumberOfReplaysToKeep() const { return NumberOfReplaysToKeep; }
+
 	UFUNCTION()
-	void SetNumberOfReplaysToKeep(int32 InNumberOfReplays) { NumberOfReplaysToKeep = InNumberOfReplays; }
+	void SetNumberOfReplaysToKeep(const int32 InNumberOfReplays) { NumberOfReplaysToKeep = InNumberOfReplays; }
 
 private:
-
 	UPROPERTY(Config)
 	bool bShouldAutoRecordReplays = false;
 
 	UPROPERTY(Config)
 	int32 NumberOfReplaysToKeep = 5;
 
-private:
 	void OnAppActivationStateChanged(bool bIsActive);
 	void ReapplyThingsDueToPossibleDeviceProfileChange();
 
-private:
 	FDelegateHandle OnApplicationActivationStateChangedHandle;
 };

@@ -36,7 +36,7 @@ DECLARE_LOG_CATEGORY_EXTERN(LogTempGameSettingRegistry, Log, Log);
  * 
  */
 UCLASS()
-class ULyraGameSettingRegistry : public UGameSettingRegistry
+class EPICSQUAD_API ULyraGameSettingRegistry : public UGameSettingRegistry
 {
 	GENERATED_BODY()
 
@@ -52,14 +52,14 @@ protected:
 	virtual bool IsFinishedInitializing() const override;
 
 	UGameSettingCollection* InitializeVideoSettings(ULyraLocalPlayer* InLocalPlayer);
-	void InitializeVideoSettings_FrameRates(UGameSettingCollection* Screen, ULyraLocalPlayer* InLocalPlayer);
+	static void InitializeVideoSettings_FrameRates(UGameSettingCollection* Screen, ULyraLocalPlayer* InLocalPlayer);
 	void AddPerformanceStatPage(UGameSettingCollection* Screen, ULyraLocalPlayer* InLocalPlayer);
 
-	UGameSettingCollection* InitializeAudioSettings(ULyraLocalPlayer* InLocalPlayer);
-	UGameSettingCollection* InitializeGameplaySettings(ULyraLocalPlayer* InLocalPlayer);
+	static UGameSettingCollection* InitializeAudioSettings(ULyraLocalPlayer* InLocalPlayer);
+	static UGameSettingCollection* InitializeGameplaySettings(ULyraLocalPlayer* InLocalPlayer);
 
-	UGameSettingCollection* InitializeMouseAndKeyboardSettings(ULyraLocalPlayer* InLocalPlayer);
-	UGameSettingCollection* InitializeGamepadSettings(ULyraLocalPlayer* InLocalPlayer);
+	static UGameSettingCollection* InitializeMouseAndKeyboardSettings(ULyraLocalPlayer* InLocalPlayer);
+	static UGameSettingCollection* InitializeGamepadSettings(ULyraLocalPlayer* InLocalPlayer);
 
 	UPROPERTY()
 	TObjectPtr<UGameSettingCollection> VideoSettings;

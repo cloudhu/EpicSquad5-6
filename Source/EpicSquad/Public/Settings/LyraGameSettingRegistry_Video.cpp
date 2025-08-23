@@ -52,7 +52,7 @@ public:
 
 		if (bMatches == bMatchesAreBad)
 		{
-			InOutEditState.Kill(FString::Printf(TEXT("Frame pacing mode %d didn't match requirement %d"), (int32)ActualMode, (int32)DesiredMode));
+			InOutEditState.Kill(FString::Printf(TEXT("Frame pacing mode %d didn't match requirement %d"), static_cast<int32>(ActualMode), static_cast<int32>(DesiredMode)));
 		}
 	}
 private:
@@ -99,8 +99,7 @@ UGameSettingCollection* ULyraGameSettingRegistry::InitializeVideoSettings(ULyraL
 	Screen->SetDisplayName(LOCTEXT("VideoCollection_Name", "Video"));
 	Screen->Initialize(InLocalPlayer);
 
-	UGameSettingValueDiscreteDynamic_Enum* WindowModeSetting = nullptr;
-	UGameSetting* MobileFPSType = nullptr;
+	UGameSettingValueDiscreteDynamic_Enum* WindowModeSetting;
 
 	// Display
 	////////////////////////////////////////////////////////////////////////////////////
@@ -211,8 +210,8 @@ UGameSettingCollection* ULyraGameSettingRegistry::InitializeVideoSettings(ULyraL
 			Setting->SetDynamicGetter(GET_LOCAL_SETTINGS_FUNCTION_PATH(GetDisplayGamma));
 			Setting->SetDynamicSetter(GET_LOCAL_SETTINGS_FUNCTION_PATH(SetDisplayGamma));
 			Setting->SetDefaultValue(2.2);
-			Setting->SetDisplayFormat([](double SourceValue, double NormalizedValue) {
-				return FText::Format(LOCTEXT("BrightnessFormat", "{0}%"), (int32)FMath::GetMappedRangeValueClamped(FVector2D(0, 1), FVector2D(50, 150), NormalizedValue));
+			Setting->SetDisplayFormat([](double SourceValue, const double NormalizedValue) {
+				return FText::Format(LOCTEXT("BrightnessFormat", "{0}%"), static_cast<int32>(FMath::GetMappedRangeValueClamped(FVector2D(0, 1), FVector2D(50, 150), NormalizedValue)));
 			});
 			Setting->SetSourceRangeAndStep(TRange<double>(1.7, 2.7), 0.01);
 
@@ -249,13 +248,14 @@ UGameSettingCollection* ULyraGameSettingRegistry::InitializeVideoSettings(ULyraL
 	// Graphics Quality
 	////////////////////////////////////////////////////////////////////////////////////
 	{
+		UGameSetting* MobileFPSType;
 		UGameSettingCollection* GraphicsQuality = NewObject<UGameSettingCollection>();
 		GraphicsQuality->SetDevName(TEXT("GraphicsQuality"));
 		GraphicsQuality->SetDisplayName(LOCTEXT("GraphicsQuality_Name", "Graphics Quality"));
 		Screen->AddSetting(GraphicsQuality);
 
-		UGameSetting* AutoSetQuality = nullptr;
-		UGameSetting* GraphicsQualityPresets = nullptr;
+		UGameSetting* AutoSetQuality;
+		UGameSetting* GraphicsQualityPresets;
 
 		//----------------------------------------------------------------------------------
 		{
@@ -617,7 +617,7 @@ void AddFrameRateOptions(UGameSettingValueDiscreteDynamic_Number* Setting)
 	const FText FPSFormat = LOCTEXT("FPSFormat", "{0} FPS");
 	for (int32 Rate : GetDefault<ULyraPerformanceSettings>()->DesktopFrameRateLimits)
 	{
-		Setting->AddOption((float)Rate, FText::Format(FPSFormat, Rate));
+		Setting->AddOption(static_cast<float>(Rate), FText::Format(FPSFormat, Rate));
 	}
 	Setting->AddOption(0.0f, LOCTEXT("UnlimitedFPS", "Unlimited"));
 }

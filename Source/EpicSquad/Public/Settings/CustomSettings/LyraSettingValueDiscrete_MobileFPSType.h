@@ -12,7 +12,7 @@ enum class EGameSettingChangeReason : uint8;
 class UObject;
 
 UCLASS()
-class ULyraSettingValueDiscrete_MobileFPSType : public UGameSettingValueDiscrete
+class EPICSQUAD_API ULyraSettingValueDiscrete_MobileFPSType : public UGameSettingValueDiscrete
 {
 	GENERATED_BODY()
 	

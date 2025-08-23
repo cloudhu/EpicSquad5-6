@@ -15,7 +15,7 @@ class UObject;
 //--------------------------------------
 
 UCLASS()
-class ULyraSettingKeyboardInput : public UGameSettingValue
+class EPICSQUAD_API ULyraSettingKeyboardInput : public UGameSettingValue
 {
 	GENERATED_BODY()
 

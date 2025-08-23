@@ -4,7 +4,6 @@
 
 #include "GameSettingCollection.h"
 #include "GameSettingAction.h"
-#include "UObject/WeakObjectPtr.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(GameSettingRegistry)
 
@@ -41,7 +40,7 @@ void UGameSettingRegistry::Regenerate()
 bool UGameSettingRegistry::IsFinishedInitializing() const
 {
 	bool bReady = true;
-	for (UGameSetting* Setting : RegisteredSettings)
+	for (const UGameSetting* Setting : RegisteredSettings)
 	{
 		if (!Setting->IsReady())
 		{
@@ -58,7 +57,7 @@ void UGameSettingRegistry::SaveChanges()
 
 }
 
-void UGameSettingRegistry::GetSettingsForFilter(const FGameSettingFilterState& FilterState, TArray<UGameSetting*>& InOutSettings)
+void UGameSettingRegistry::GetSettingsForFilter(const FGameSettingFilterState& FilterState, TArray<UGameSetting*>& InOutSettings) const
 {
 	TArray<UGameSetting*> RootSettings;
 	if (FilterState.GetSettingRootList().Num() > 0)
@@ -128,7 +127,7 @@ void UGameSettingRegistry::RegisterInnerSettings(UGameSetting* InSetting)
 
 #if !UE_BUILD_SHIPPING
 	ensureAlwaysMsgf(!RegisteredSettings.Contains(InSetting), TEXT("This setting has already been registered!"));
-	ensureAlwaysMsgf(nullptr == RegisteredSettings.FindByPredicate([&InSetting](UGameSetting* ExistingSetting) { return InSetting->GetDevName() == ExistingSetting->GetDevName(); }), TEXT("A setting with this DevName has already been registered!  DevNames must be unique within a registry."));
+	ensureAlwaysMsgf(nullptr == RegisteredSettings.FindByPredicate([&InSetting](const UGameSetting* ExistingSetting) { return InSetting->GetDevName() == ExistingSetting->GetDevName(); }), TEXT("A setting with this DevName has already been registered!  DevNames must be unique within a registry."));
 #endif
 
 	RegisteredSettings.Add(InSetting);

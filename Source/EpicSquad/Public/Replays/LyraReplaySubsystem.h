@@ -74,7 +74,7 @@ public:
 
 	/** Loads the appropriate map and plays a replay */
 	UFUNCTION(BlueprintCallable, Category=Replays)
-	UE_API void PlayReplay(ULyraReplayListEntry* Replay);
+	UE_API void PlayReplay(ULyraReplayListEntry* Replay) const;
 
 	/** Starts recording a client replay, and handles any file cleanup needed */
 	UFUNCTION(BlueprintCallable, Category = Replays)
@@ -86,7 +86,7 @@ public:
 
 	/** Move forward or back in currently playing replay */
 	UFUNCTION(BlueprintCallable, Category=Replays)
-	UE_API void SeekInActiveReplay(float TimeInSeconds);
+	UE_API void SeekInActiveReplay(float TimeInSeconds) const;
 
 	/** Gets length of current replay */
 	UFUNCTION(BlueprintCallable, Category = Replays, BlueprintPure = false)

@@ -40,10 +40,9 @@ UGameSettingCollection* ULyraGameSettingRegistry::InitializeGamepadSettings(ULyr
 			Setting->SetDynamicGetter(GET_LOCAL_SETTINGS_FUNCTION_PATH(GetControllerPlatform));
 			Setting->SetDynamicSetter(GET_LOCAL_SETTINGS_FUNCTION_PATH(SetControllerPlatform));
 			
-			if (UCommonInputPlatformSettings* PlatformInputSettings = UPlatformSettingsManager::Get().GetSettingsForPlatform<UCommonInputPlatformSettings>())
+			if (const UCommonInputPlatformSettings* PlatformInputSettings = UPlatformSettingsManager::Get().GetSettingsForPlatform<UCommonInputPlatformSettings>())
 			{
-				const TArray<TSoftClassPtr<UCommonInputBaseControllerData>>& ControllerDatas = PlatformInputSettings->GetControllerData();
-				for (TSoftClassPtr<UCommonInputBaseControllerData> ControllerDataPtr : ControllerDatas)
+				for (const TArray<TSoftClassPtr<UCommonInputBaseControllerData>>& ControllerDatas = PlatformInputSettings->GetControllerData(); TSoftClassPtr<UCommonInputBaseControllerData> ControllerDataPtr : ControllerDatas)
 				{
 					if (TSubclassOf<UCommonInputBaseControllerData> ControllerDataClass = ControllerDataPtr.LoadSynchronous())
 					{
@@ -55,14 +54,13 @@ UGameSettingCollection* ULyraGameSettingRegistry::InitializeGamepadSettings(ULyr
 					}
 				}
 
-				// Add the setting if we can select more than one game controller type on this platform
+				// Add the setting if we can select more than one game controller type on this platform,
 				// and we are allowed to change it
 				if (Setting->GetDynamicOptions().Num() > 1 && PlatformInputSettings->CanChangeGamepadType())
 				{
 					Hardware->AddSetting(Setting);
 
-					const FName CurrentControllerPlatform = GetDefault<ULyraSettingsLocal>()->GetControllerPlatform();
-					if (CurrentControllerPlatform == NAME_None)
+					if (const FName CurrentControllerPlatform = GetDefault<ULyraSettingsLocal>()->GetControllerPlatform(); CurrentControllerPlatform == NAME_None)
 					{
 						Setting->SetDiscreteOptionByIndex(0);
 					}
@@ -156,7 +154,7 @@ UGameSettingCollection* ULyraGameSettingRegistry::InitializeGamepadSettings(ULyr
 			Setting->SetDynamicSetter(GET_SHARED_SETTINGS_FUNCTION_PATH(SetLookSensitivityPreset));
 			Setting->SetDefaultValue(GetDefault<ULyraSettingsShared>()->GetGamepadLookSensitivityPreset());
 
-			for (int32 PresetIndex = 1; PresetIndex < (int32)ELyraGamepadSensitivity::MAX; PresetIndex++)
+			for (int32 PresetIndex = 1; PresetIndex < static_cast<int32>(ELyraGamepadSensitivity::MAX); PresetIndex++)
 			{
 				Setting->AddEnumOption(static_cast<ELyraGamepadSensitivity>(PresetIndex), EGamepadSensitivityText[PresetIndex]);
 			}
@@ -174,7 +172,7 @@ UGameSettingCollection* ULyraGameSettingRegistry::InitializeGamepadSettings(ULyr
 			Setting->SetDynamicSetter(GET_SHARED_SETTINGS_FUNCTION_PATH(SetGamepadTargetingSensitivityPreset));
 			Setting->SetDefaultValue(GetDefault<ULyraSettingsShared>()->GetGamepadTargetingSensitivityPreset());
 
-			for (int32 PresetIndex = 1; PresetIndex < (int32)ELyraGamepadSensitivity::MAX; PresetIndex++)
+			for (int32 PresetIndex = 1; PresetIndex < static_cast<int32>(ELyraGamepadSensitivity::MAX); PresetIndex++)
 			{
 				Setting->AddEnumOption(static_cast<ELyraGamepadSensitivity>(PresetIndex), EGamepadSensitivityText[PresetIndex]);
 			}

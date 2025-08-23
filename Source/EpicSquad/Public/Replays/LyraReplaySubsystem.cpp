@@ -15,7 +15,7 @@
 
 UE_DEFINE_GAMEPLAY_TAG_STATIC(TAG_Platform_Trait_ReplaySupport, "Platform.Trait.ReplaySupport");
 
-ULyraReplaySubsystem::ULyraReplaySubsystem()
+ULyraReplaySubsystem::ULyraReplaySubsystem(): DeletingReplaysNumberToKeep(0)
 {
 }
 
@@ -33,7 +33,7 @@ FGameplayTag ULyraReplaySubsystem::GetPlatformSupportTraitTag()
 	return TAG_Platform_Trait_ReplaySupport.GetTag();
 }
 
-void ULyraReplaySubsystem::PlayReplay(ULyraReplayListEntry* Replay)
+void ULyraReplaySubsystem::PlayReplay(ULyraReplayListEntry* Replay) const
 {
 	if (Replay != nullptr)
 	{
@@ -157,7 +157,7 @@ void ULyraReplaySubsystem::OnDeleteReplay(const FDeleteFinishedStreamResult& Del
 	}
 }
 
-void ULyraReplaySubsystem::SeekInActiveReplay(float TimeInSeconds)
+void ULyraReplaySubsystem::SeekInActiveReplay(float TimeInSeconds) const
 {
 	if (UDemoNetDriver* DemoDriver = GetDemoDriver())
 	{

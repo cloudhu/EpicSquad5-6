@@ -15,7 +15,7 @@ class UObject;
  *	Used for controlling the debug camera when it is enabled via the cheat manager.
  */
 UCLASS()
-class ALyraDebugCameraController : public ADebugCameraController
+class EPICSQUAD_API ALyraDebugCameraController : public ADebugCameraController
 {
 	GENERATED_BODY()
 

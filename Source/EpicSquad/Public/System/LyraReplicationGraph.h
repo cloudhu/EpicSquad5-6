@@ -8,11 +8,11 @@
 
 class AGameplayDebuggerCategoryReplicator;
 
-DECLARE_LOG_CATEGORY_EXTERN(LogTempRepGraph, Display, All);
+DECLARE_LOG_CATEGORY_EXTERN(LogRepGraph, Display, All);
 
 /** Lyra Replication Graph implementation. See additional notes in LyraReplicationGraph.cpp! */
 UCLASS(transient, config=Engine)
-class ULyraReplicationGraph : public UReplicationGraph
+class EPICSQUAD_API ULyraReplicationGraph : public UReplicationGraph
 {
 	GENERATED_BODY()
 

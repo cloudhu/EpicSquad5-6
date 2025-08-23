@@ -21,7 +21,7 @@ struct FFrame;
  *	The controller class used by player bots in this project.
  */
 UCLASS(Blueprintable)
-class ALyraPlayerBotController : public AModularAIController, public ILyraTeamAgentInterface
+class EPICSQUAD_API ALyraPlayerBotController : public AModularAIController, public ILyraTeamAgentInterface
 {
 	GENERATED_BODY()
 

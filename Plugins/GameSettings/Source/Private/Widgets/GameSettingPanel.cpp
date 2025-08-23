@@ -88,7 +88,7 @@ void UGameSettingPanel::RegisterRegistryEvents()
 	}
 }
 
-void UGameSettingPanel::UnregisterRegistryEvents()
+void UGameSettingPanel::UnregisterRegistryEvents() const
 {
 	if (Registry)
 	{
@@ -239,7 +239,7 @@ void UGameSettingPanel::HandleSettingItemSelectionChanged(UObject* Item)
 	FillSettingDetails(Cast<UGameSetting>(Item));
 }
 
-void UGameSettingPanel::FillSettingDetails(UGameSetting* InSetting)
+void UGameSettingPanel::FillSettingDetails(UGameSetting* InSetting) const
 {
 	if (Details_Settings)
 	{
@@ -249,7 +249,7 @@ void UGameSettingPanel::FillSettingDetails(UGameSetting* InSetting)
 	OnFocusedSettingChanged.Broadcast(InSetting);
 }
 
-void UGameSettingPanel::HandleSettingNamedAction(UGameSetting* Setting, FGameplayTag GameSettings_Action_Tag)
+void UGameSettingPanel::HandleSettingNamedAction(UGameSetting* Setting, const FGameplayTag GameSettings_Action_Tag) const
 {
 	BP_OnExecuteNamedAction.Broadcast(Setting, GameSettings_Action_Tag);
 }

@@ -19,7 +19,7 @@ class UObject;
 //////////////////////////////////////////////////////////////////////////
 
 UCLASS(Abstract, Blueprintable, meta = (Category = "Settings", DisableNativeTick))
-class ULyraSettingsListEntrySetting_KeyboardInput : public UGameSettingListEntry_Setting
+class EPICSQUAD_API ULyraSettingsListEntrySetting_KeyboardInput : public UGameSettingListEntry_Setting
 {
 	GENERATED_BODY()
 

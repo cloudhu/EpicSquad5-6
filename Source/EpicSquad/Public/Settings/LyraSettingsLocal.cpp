@@ -347,7 +347,7 @@ ULyraSettingsLocal::ULyraSettingsLocal()
 
 	bEnableScalabilitySettings = ULyraPlatformSpecificRenderingSettings::Get()->bSupportsGranularVideoQualitySettings;
 
-	SetToDefaults();
+	ULyraSettingsLocal::SetToDefaults();
 }
 
 void ULyraSettingsLocal::SetToDefaults()
@@ -357,7 +357,7 @@ void ULyraSettingsLocal::SetToDefaults()
 	bUseHeadphoneMode = false;
 	bUseHDRAudioMode = false;
 	bSoundControlBusMixLoaded = false;
-	bEnableLatencyTrackingStats = ULyraSettingsLocal::DoesPlatformSupportLatencyTrackingStats();
+	bEnableLatencyTrackingStats = DoesPlatformSupportLatencyTrackingStats();
 
 	const ULyraPlatformSpecificRenderingSettings* PlatformSettings = ULyraPlatformSpecificRenderingSettings::Get();
 	UserChosenDeviceProfileSuffix = PlatformSettings->DefaultDeviceProfileSuffix;
@@ -930,7 +930,7 @@ bool ULyraSettingsLocal::IsHeadphoneModeEnabled() const
 	return bUseHeadphoneMode;
 }
 
-bool ULyraSettingsLocal::CanModifyHeadphoneModeEnabled() const
+bool ULyraSettingsLocal::CanModifyHeadphoneModeEnabled()
 {
 	static IConsoleVariable* BinauralSpatializationDisabledCVar = IConsoleManager::Get().FindConsoleVariable(TEXT("au.DisableBinauralSpatialization"));
 	const bool bHRTFOptionAvailable = BinauralSpatializationDisabledCVar && ((BinauralSpatializationDisabledCVar->GetFlags() & EConsoleVariableFlags::ECVF_SetByMask) <= EConsoleVariableFlags::ECVF_SetByGameSetting);
@@ -997,7 +997,7 @@ void ULyraSettingsLocal::RunAutoBenchmark(bool bSaveImmediately)
 	}
 }
 
-void ULyraSettingsLocal::ApplyScalabilitySettings()
+void ULyraSettingsLocal::ApplyScalabilitySettings() const
 {
 	Scalability::SetQualityLevels(ScalabilityQuality);
 }
@@ -1195,7 +1195,7 @@ void ULyraSettingsLocal::SetAudioOutputDeviceId(const FString& InAudioOutputDevi
 	OnAudioOutputDeviceChanged.Broadcast(InAudioOutputDeviceId);
 }
 
-void ULyraSettingsLocal::ApplySafeZoneScale()
+void ULyraSettingsLocal::ApplySafeZoneScale() const
 {
 	SSafeZone::SetGlobalSafeZoneScale(GetSafeZone());
 }
@@ -1213,7 +1213,7 @@ void ULyraSettingsLocal::ApplyNonResolutionSettings()
 
 	// In this section, update each Control Bus to the currently cached UI settings
 	{
-		if (TObjectPtr<USoundControlBus>* ControlBusDblPtr = ControlBusMap.Find(TEXT("Overall")))
+		if (const TObjectPtr<USoundControlBus>* ControlBusDblPtr = ControlBusMap.Find(TEXT("Overall")))
 		{
 			if (USoundControlBus* ControlBusPtr = *ControlBusDblPtr)
 			{
@@ -1221,7 +1221,7 @@ void ULyraSettingsLocal::ApplyNonResolutionSettings()
 			}
 		}
 
-		if (TObjectPtr<USoundControlBus>* ControlBusDblPtr = ControlBusMap.Find(TEXT("Music")))
+		if (const TObjectPtr<USoundControlBus>* ControlBusDblPtr = ControlBusMap.Find(TEXT("Music")))
 		{
 			if (USoundControlBus* ControlBusPtr = *ControlBusDblPtr)
 			{
@@ -1229,7 +1229,7 @@ void ULyraSettingsLocal::ApplyNonResolutionSettings()
 			}
 		}
 
-		if (TObjectPtr<USoundControlBus>* ControlBusDblPtr = ControlBusMap.Find(TEXT("SoundFX")))
+		if (const TObjectPtr<USoundControlBus>* ControlBusDblPtr = ControlBusMap.Find(TEXT("SoundFX")))
 		{
 			if (USoundControlBus* ControlBusPtr = *ControlBusDblPtr)
 			{
@@ -1237,7 +1237,7 @@ void ULyraSettingsLocal::ApplyNonResolutionSettings()
 			}
 		}
 
-		if (TObjectPtr<USoundControlBus>* ControlBusDblPtr = ControlBusMap.Find(TEXT("Dialogue")))
+		if (const TObjectPtr<USoundControlBus>* ControlBusDblPtr = ControlBusMap.Find(TEXT("Dialogue")))
 		{
 			if (USoundControlBus* ControlBusPtr = *ControlBusDblPtr)
 			{
@@ -1245,7 +1245,7 @@ void ULyraSettingsLocal::ApplyNonResolutionSettings()
 			}
 		}
 
-		if (TObjectPtr<USoundControlBus>* ControlBusDblPtr = ControlBusMap.Find(TEXT("VoiceChat")))
+		if (const TObjectPtr<USoundControlBus>* ControlBusDblPtr = ControlBusMap.Find(TEXT("VoiceChat")))
 		{
 			if (USoundControlBus* ControlBusPtr = *ControlBusDblPtr)
 			{
@@ -1670,7 +1670,7 @@ void ULyraSettingsLocal::UpdateMobileFramePacing()
 	UpdateDynamicResFrameTime((float)TargetFPS);
 }
 
-void ULyraSettingsLocal::UpdateDynamicResFrameTime(float TargetFPS)
+void ULyraSettingsLocal::UpdateDynamicResFrameTime(const float TargetFPS)
 {
 	static IConsoleVariable* CVarDyResFrameTimeBudget = IConsoleManager::Get().FindConsoleVariable(TEXT("r.DynamicRes.FrameTimeBudget"));
 	if (CVarDyResFrameTimeBudget)

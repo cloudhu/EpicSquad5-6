@@ -689,6 +689,7 @@ void SActorCanvas::GetOffsetAndSize(const UIndicatorDescriptor* Indicator,
 			OutPaddingMin.X = OutSize.X;
 			OutPaddingMax.X = 0.0f;
 			break;
+		default: ;
 	}
 
 	//Now, handle vertical alignment
@@ -711,6 +712,7 @@ void SActorCanvas::GetOffsetAndSize(const UIndicatorDescriptor* Indicator,
 			OutPaddingMin.Y = OutSize.Y;
 			OutPaddingMax.Y = 0.0f;
 			break;
+		default: ;
 	}
 }
 

@@ -9,7 +9,7 @@
 class UObject;
 
 UCLASS()
-class ULyraSettingValueDiscrete_OverallQuality : public UGameSettingValueDiscrete
+class EPICSQUAD_API ULyraSettingValueDiscrete_OverallQuality : public UGameSettingValueDiscrete
 {
 	GENERATED_BODY()
 	

@@ -4,8 +4,6 @@
 
 #include "GameFramework/SaveGame.h"
 #include "SubtitleDisplayOptions.h"
-
-#include "UObject/ObjectPtr.h"
 #include "LyraSettingsShared.generated.h"
 
 class UObject;
@@ -61,7 +59,7 @@ class ULyraLocalPlayer;
  *
  */
 UCLASS()
-class ULyraSettingsShared : public ULocalPlayerSaveGame
+class EPICSQUAD_API ULyraSettingsShared : public ULocalPlayerSaveGame
 {
 	GENERATED_BODY()
 

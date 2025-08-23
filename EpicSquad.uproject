@@ -242,6 +242,30 @@
     {
       "Name": "ModularGameplayActors",
       "Enabled": true
+    },
+    {
+      "Name": "OnlineFramework",
+      "Enabled": true
+    },
+    {
+      "Name": "DTLSHandlerComponent",
+      "Enabled": true
+    },
+    {
+      "Name": "Gauntlet",
+      "Enabled": true
+    },
+    {
+      "Name": "GameplayStateTree",
+      "Enabled": true
+    },
+    {
+      "Name": "StateTree",
+      "Enabled": true
+    },
+    {
+      "Name": "Reflex",
+      "Enabled": true
     }
   ]
 }

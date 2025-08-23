@@ -4,8 +4,6 @@
 
 #include "GenericTeamAgentInterface.h"
 #include "UObject/Object.h"
-
-#include "UObject/WeakObjectPtr.h"
 #include "LyraTeamAgentInterface.generated.h"
 
 #define UE_API EPICSQUAD_API

@@ -23,8 +23,7 @@ void ULyraSettingValueDiscrete_Language::OnInitialized()
 {
 	Super::OnInitialized();
 
-	const TArray<FString> AllCultureNames = FTextLocalizationManager::Get().GetLocalizedCultureNames(ELocalizationLoadFlags::Game);
-	for (const FString& CultureName : AllCultureNames)
+	for (const TArray<FString> AllCultureNames = FTextLocalizationManager::Get().GetLocalizedCultureNames(ELocalizationLoadFlags::Game); const FString& CultureName : AllCultureNames)
 	{
 		if (FInternationalization::Get().IsCultureAllowed(CultureName))
 		{

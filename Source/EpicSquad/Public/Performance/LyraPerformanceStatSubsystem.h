@@ -22,7 +22,7 @@ struct FFrame;
  * Stores a buffer of the given sample size and provides an interface to get data
  * like the min, max, and average of that group.
  */
-class FSampledStatCache
+class EPICSQUAD_API FSampledStatCache
 {
 public:
 
@@ -162,7 +162,7 @@ protected:
 
 // Subsystem to allow access to performance stats for display purposes
 UCLASS(BlueprintType)
-class ULyraPerformanceStatSubsystem : public UGameInstanceSubsystem
+class EPICSQUAD_API ULyraPerformanceStatSubsystem : public UGameInstanceSubsystem
 {
 	GENERATED_BODY()
 

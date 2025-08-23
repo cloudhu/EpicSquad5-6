@@ -12,7 +12,7 @@ class UObject;
 
 
 UCLASS()
-class ULyraSettingValueScalarDynamic_SafeZoneValue : public UGameSettingValueScalarDynamic
+class EPICSQUAD_API ULyraSettingValueScalarDynamic_SafeZoneValue : public UGameSettingValueScalarDynamic
 {
 	GENERATED_BODY()
 
@@ -22,7 +22,7 @@ public:
 };
 
 UCLASS()
-class ULyraSettingAction_SafeZoneEditor : public UGameSettingAction
+class EPICSQUAD_API ULyraSettingAction_SafeZoneEditor : public UGameSettingAction
 {
 	GENERATED_BODY()
 	

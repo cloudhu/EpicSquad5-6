@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 
 #include "GameFramework/NinjaFactionPlayerController.h"
-#include "GameFramework/PlayerController.h"
 #include "EpicSquadPlayerController.generated.h"
 
 

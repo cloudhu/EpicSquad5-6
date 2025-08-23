@@ -17,7 +17,7 @@ struct FPlatformUserSelectionCompleteParams;
  * re-connect them to continue playing the game.
  */
 UCLASS(Abstract, BlueprintType, Blueprintable)
-class ULyraControllerDisconnectedScreen : public UCommonActivatableWidget
+class EPICSQUAD_API ULyraControllerDisconnectedScreen : public UCommonActivatableWidget
 {
 	GENERATED_BODY()
 public:

@@ -3,7 +3,9 @@
 #include "LyraSettingScreen.h"
 
 #include "Input/CommonUIInputTypes.h"
+
 #include "Player/LyraLocalPlayer.h"
+
 #include "Settings/LyraGameSettingRegistry.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(LyraSettingScreen)
@@ -14,7 +16,7 @@ void ULyraSettingScreen::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
 
-	BackHandle = RegisterUIActionBinding(FBindUIActionArgs(BackInputActionData, true, FSimpleDelegate::CreateUObject(this, &ThisClass::HandleBackAction)));
+	BackHandle = RegisterUIActionBinding(FBindUIActionArgs(BackInputActionData, true, FSimpleDelegate::CreateUObject(this, &ThisClass::SettingHandleBackAction)));
 	ApplyHandle = RegisterUIActionBinding(FBindUIActionArgs(ApplyInputActionData, true, FSimpleDelegate::CreateUObject(this, &ThisClass::HandleApplyAction)));
 	CancelChangesHandle = RegisterUIActionBinding(FBindUIActionArgs(CancelChangesInputActionData, true, FSimpleDelegate::CreateUObject(this, &ThisClass::HandleCancelChangesAction)));
 }
@@ -31,7 +33,7 @@ UGameSettingRegistry* ULyraSettingScreen::CreateRegistry()
 	return NewRegistry;
 }
 
-void ULyraSettingScreen::HandleBackAction()
+void ULyraSettingScreen::SettingHandleBackAction()
 {
 	if (AttemptToPopNavigation())
 	{

@@ -76,7 +76,7 @@ void ULyraGameSettingRegistry::SaveChanges()
 {
 	Super::SaveChanges();
 	
-	if (ULyraLocalPlayer* LocalPlayer = Cast<ULyraLocalPlayer>(OwningLocalPlayer))
+	if (const ULyraLocalPlayer* LocalPlayer = Cast<ULyraLocalPlayer>(OwningLocalPlayer))
 	{
 		// Game user settings need to be applied to handle things like resolution, this saves indirectly
 		LocalPlayer->GetLocalSettings()->ApplySettings(false);

@@ -18,10 +18,9 @@ enum class ECommonUserOnlineContext : uint8;
 enum class ECommonUserPrivilege : uint8;
 class UCommonActivatableWidget;
 class UCommonUserInfo;
-class ULyraExperienceDefinition;
 
 UCLASS(Abstract)
-class ULyraFrontendStateComponent : public UGameStateComponent, public ILoadingProcessInterface
+class EPICSQUAD_API ULyraFrontendStateComponent : public UGameStateComponent, public ILoadingProcessInterface
 {
 	GENERATED_BODY()
 
@@ -38,8 +37,9 @@ public:
 	virtual bool ShouldShowLoadingScreen(FString& OutReason) const override;
 	//~End of ILoadingProcessInterface
 
+	void OnFrontendLayoutLoaded(const bool bSuccess);
 private:
-	void OnExperienceLoaded(const ULyraExperienceDefinition* Experience);
+	
 
 	UFUNCTION()
 	void OnUserInitialized(const UCommonUserInfo* UserInfo, bool bSuccess, FText Error, ECommonUserPrivilege RequestedPrivilege, ECommonUserOnlineContext OnlineContext);

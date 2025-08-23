@@ -70,7 +70,7 @@ public:
 	* Should force feedback effects be played, even if the last input device was not a gamepad?
 	* The default behavior in Lyra is to only play force feedback if the most recent input device was a gamepad.
 	*/
-	UPROPERTY(config, EditAnywhere, Category = Lyra, meta = (ConsoleVariable = "LyraPC.ShouldAlwaysPlayForceFeedback"))
+	UPROPERTY(config, EditAnywhere, Category = Lyra)
 	bool bShouldAlwaysPlayForceFeedback = false;
 
 	// Should game logic load cosmetic backgrounds in the editor or skip them for iteration speed?

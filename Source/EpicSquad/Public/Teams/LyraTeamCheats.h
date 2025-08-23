@@ -11,7 +11,7 @@ struct FFrame;
 
 /** Cheats related to teams */
 UCLASS()
-class ULyraTeamCheats : public UCheatManagerExtension
+class EPICSQUAD_API ULyraTeamCheats : public UCheatManagerExtension
 {
 	GENERATED_BODY()
 

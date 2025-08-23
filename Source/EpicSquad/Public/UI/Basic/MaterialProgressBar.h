@@ -12,7 +12,7 @@ class UMaterialInterface;
 class UWidgetAnimation;
 
 UCLASS(Abstract, meta = (DisableNativeTick))
-class UMaterialProgressBar : public UCommonUserWidget
+class EPICSQUAD_API UMaterialProgressBar : public UCommonUserWidget
 {
 	GENERATED_BODY()
 

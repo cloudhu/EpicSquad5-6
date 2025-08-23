@@ -11,7 +11,7 @@ class SWidget;
 class UObject;
 
 UCLASS()
-class UIndicatorLayer : public UWidget
+class EPICSQUAD_API UIndicatorLayer : public UWidget
 {
 	GENERATED_UCLASS_BODY()
 

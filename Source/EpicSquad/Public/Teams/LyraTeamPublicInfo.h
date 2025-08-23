@@ -12,7 +12,7 @@ class UObject;
 struct FFrame;
 
 UCLASS()
-class ALyraTeamPublicInfo : public ALyraTeamInfoBase
+class EPICSQUAD_API ALyraTeamPublicInfo : public ALyraTeamInfoBase
 {
 	GENERATED_BODY()
 

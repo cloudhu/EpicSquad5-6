@@ -10,7 +10,7 @@ class UInputAction;
 
 /** An action widget that will get the icon of key that is currently assigned to the common input action on this widget */
 UCLASS(BlueprintType, Blueprintable)
-class ULyraActionWidget : public UCommonActionWidget
+class EPICSQUAD_API ULyraActionWidget : public UCommonActionWidget
 {
 	GENERATED_BODY()
 

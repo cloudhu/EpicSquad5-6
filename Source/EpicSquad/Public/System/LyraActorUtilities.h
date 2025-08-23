@@ -30,7 +30,7 @@ enum class EBlueprintExposedNetMode : uint8
 
 
 UCLASS()
-class ULyraActorUtilities : public UBlueprintFunctionLibrary
+class EPICSQUAD_API ULyraActorUtilities : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 

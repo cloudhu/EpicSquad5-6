@@ -11,7 +11,7 @@ class UObject;
 
 
 UCLASS()
-class ULyraGameEngine : public UGameEngine
+class EPICSQUAD_API ULyraGameEngine : public UGameEngine
 {
 	GENERATED_BODY()
 

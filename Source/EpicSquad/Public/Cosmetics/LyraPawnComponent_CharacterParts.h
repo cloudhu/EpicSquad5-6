@@ -120,7 +120,7 @@ struct TStructOpsTypeTraits<FLyraCharacterPartList> : public TStructOpsTypeTrait
 
 // A component that handles spawning cosmetic actors attached to the owner pawn on all clients
 UCLASS(meta=(BlueprintSpawnableComponent))
-class ULyraPawnComponent_CharacterParts : public UPawnComponent
+class EPICSQUAD_API ULyraPawnComponent_CharacterParts : public UPawnComponent
 {
 	GENERATED_BODY()
 

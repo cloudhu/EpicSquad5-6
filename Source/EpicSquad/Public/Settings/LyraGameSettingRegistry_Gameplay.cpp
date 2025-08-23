@@ -8,6 +8,7 @@
 #include "CustomSettings/LyraSettingValueDiscrete_Language.h"
 #include "LyraSettingsLocal.h"
 #include "GameSettingValueDiscreteDynamic.h"
+
 #include "Player/LyraLocalPlayer.h"
 #include "Replays/LyraReplaySubsystem.h"
 
@@ -65,6 +66,7 @@ UGameSettingCollection* ULyraGameSettingRegistry::InitializeGameplaySettings(ULy
 			Setting->SetDefaultValue(GetDefault<ULyraSettingsLocal>()->ShouldAutoRecordReplays());
 
 			Setting->AddEditCondition(FWhenPlayingAsPrimaryPlayer::Get());
+			//EpicDebug::Print(FWhenPlayingAsPrimaryPlayer::Get().ToSharedPtr().IsValid()?TEXT(" FWhenPlayingAsPrimaryPlayer True"):TEXT(" FWhenPlayingAsPrimaryPlayer False"));
 			Setting->AddEditCondition(FWhenPlatformHasTrait::KillIfMissing(ULyraReplaySubsystem::GetPlatformSupportTraitTag(), TEXT("Platform does not support saving replays")));
 
 			ReplaySubsection->AddSetting(Setting);

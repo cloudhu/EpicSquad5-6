@@ -14,7 +14,7 @@ class UObject;
 struct FFrame;
 class FSampledStatCache;
 
-class SLyraLatencyGraph : public SLeafWidget
+class EPICSQUAD_API SLyraLatencyGraph : public SLeafWidget
 {
 public:
 	/** Begin the arguments for this slate widget */
@@ -108,7 +108,7 @@ private:
  * Base class for a widget that displays the graph of a stat over time.
  */
 UCLASS(meta = (DisableNativeTick))
-class ULyraPerfStatGraph : public UUserWidget
+class EPICSQUAD_API ULyraPerfStatGraph : public UUserWidget
 {
 	GENERATED_BODY()
 
@@ -140,7 +140,7 @@ protected:
  * Base class for a widget that displays a single stat, e.g., FPS, ping, etc...
  */
  UCLASS(Abstract)
-class ULyraPerfStatWidgetBase : public UCommonUserWidget
+class EPICSQUAD_API ULyraPerfStatWidgetBase : public UCommonUserWidget
 {
 public:
 	GENERATED_BODY()

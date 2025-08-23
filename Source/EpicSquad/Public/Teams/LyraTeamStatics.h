@@ -13,7 +13,7 @@ struct FFrame;
 
 /** A subsystem for easy access to team information for team-based actors (e.g., pawns or player states) */
 UCLASS()
-class ULyraTeamStatics : public UBlueprintFunctionLibrary
+class EPICSQUAD_API ULyraTeamStatics : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 

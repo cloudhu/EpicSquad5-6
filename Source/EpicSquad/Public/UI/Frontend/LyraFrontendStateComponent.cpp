@@ -6,9 +6,14 @@
 #include "CommonSessionSubsystem.h"
 #include "CommonUserSubsystem.h"
 #include "ControlFlowManager.h"
+#include "GameUIManagerSubsystem.h"
+
 #include "Kismet/GameplayStatics.h"
 #include "NativeGameplayTags.h"
 #include "PrimaryGameLayout.h"
+
+#include "Common/DebugHelper.h"
+
 #include "Widgets/CommonActivatableWidgetContainer.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(LyraFrontendStateComponent)
@@ -35,6 +40,16 @@ void ULyraFrontendStateComponent::BeginPlay()
 	//
 	// // This delegate is on a component with the same lifetime as this one, so no need to unhook it in 
 	// ExperienceComponent->CallOrRegister_OnExperienceLoaded_HighPriority(FOnLyraExperienceLoaded::FDelegate::CreateUObject(this, &ThisClass::OnExperienceLoaded));
+	const AGameStateBase* GameState = GetGameStateChecked<AGameStateBase>();
+	
+	if (UGameUIManagerSubsystem* UIManager = GameState->GetGameInstance()->GetSubsystem<UGameUIManagerSubsystem>())
+	{
+		UIManager->CallOrRegister_OnLayoutLoaded_HighPriority(FOnLayoutLoaded::FDelegate::CreateUObject(this, &ThisClass::OnFrontendLayoutLoaded));
+		// FOnLayoutLoaded::FDelegate Delegate;
+		// Delegate.BindUObject(this, &ThisClass::OnFrontendLayoutLoaded);
+		// UIManager->CallOrRegister_OnLayoutLoaded_HighPriority(MoveTemp(Delegate));
+	}
+
 }
 
 void ULyraFrontendStateComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -47,29 +62,28 @@ bool ULyraFrontendStateComponent::ShouldShowLoadingScreen(FString& OutReason) co
 	if (bShouldShowLoadingScreen)
 	{
 		OutReason = TEXT("Frontend Flow Pending...");
-		
+
 		if (FrontEndFlow.IsValid())
 		{
-			const TOptional<FString> StepDebugName = FrontEndFlow->GetCurrentStepDebugName();
-			if (StepDebugName.IsSet())
+			if (const TOptional<FString> StepDebugName = FrontEndFlow->GetCurrentStepDebugName(); StepDebugName.IsSet())
 			{
 				OutReason = StepDebugName.GetValue();
 			}
 		}
-		
+
 		return true;
 	}
 
 	return false;
 }
 
-void ULyraFrontendStateComponent::OnExperienceLoaded(const ULyraExperienceDefinition* Experience)
+void ULyraFrontendStateComponent::OnFrontendLayoutLoaded(const bool bSuccess)
 {
 	FControlFlow& Flow = FControlFlowStatics::Create(this, TEXT("FrontendFlow"))
-		.QueueStep(TEXT("Wait For User Initialization"), this, &ThisClass::FlowStep_WaitForUserInitialization)
-		.QueueStep(TEXT("Try Show Press Start Screen"), this, &ThisClass::FlowStep_TryShowPressStartScreen)
-		.QueueStep(TEXT("Try Join Requested Session"), this, &ThisClass::FlowStep_TryJoinRequestedSession)
-		.QueueStep(TEXT("Try Show Main Screen"), this, &ThisClass::FlowStep_TryShowMainScreen);
+	                     .QueueStep(TEXT("Wait For User Initialization"), this, &ThisClass::FlowStep_WaitForUserInitialization)
+	                     .QueueStep(TEXT("Try Show Press Start Screen"), this, &ThisClass::FlowStep_TryShowPressStartScreen)
+	                     .QueueStep(TEXT("Try Join Requested Session"), this, &ThisClass::FlowStep_TryJoinRequestedSession)
+	                     .QueueStep(TEXT("Try Show Main Screen"), this, &ThisClass::FlowStep_TryShowMainScreen);
 
 	Flow.ExecuteFlow();
 
@@ -81,8 +95,8 @@ void ULyraFrontendStateComponent::FlowStep_WaitForUserInitialization(FControlFlo
 	// If this was a hard disconnect, explicitly destroy all user and session state
 	// TODO: Refactor the engine disconnect flow so it is more explicit about why it happened
 	bool bWasHardDisconnect = false;
-	AGameModeBase* GameMode = GetWorld()->GetAuthGameMode<AGameModeBase>();
-	UGameInstance* GameInstance = UGameplayStatics::GetGameInstance(this);
+	const AGameModeBase* GameMode = GetWorld()->GetAuthGameMode<AGameModeBase>();
+	const UGameInstance* GameInstance = UGameplayStatics::GetGameInstance(this);
 
 	if (ensure(GameMode) && UGameplayStatics::HasOption(GameMode->OptionsString, TEXT("closed")))
 	{
@@ -90,15 +104,13 @@ void ULyraFrontendStateComponent::FlowStep_WaitForUserInitialization(FControlFlo
 	}
 
 	// Only reset users on hard disconnect
-	UCommonUserSubsystem* UserSubsystem = GameInstance->GetSubsystem<UCommonUserSubsystem>();
-	if (ensure(UserSubsystem) && bWasHardDisconnect)
+	if (UCommonUserSubsystem* UserSubsystem = GameInstance->GetSubsystem<UCommonUserSubsystem>(); ensure(UserSubsystem) && bWasHardDisconnect)
 	{
 		UserSubsystem->ResetUserState();
 	}
 
 	// Always reset sessions
-	UCommonSessionSubsystem* SessionSubsystem = GameInstance->GetSubsystem<UCommonSessionSubsystem>();
-	if (ensure(SessionSubsystem))
+	if (UCommonSessionSubsystem* SessionSubsystem = GameInstance->GetSubsystem<UCommonSessionSubsystem>(); ensure(SessionSubsystem))
 	{
 		SessionSubsystem->CleanUpSessions();
 	}
@@ -124,7 +136,7 @@ void ULyraFrontendStateComponent::FlowStep_TryShowPressStartScreen(FControlFlowN
 
 	// Check to see if the platform actually requires a 'Press Start' screen.  This is only
 	// required on platforms where there can be multiple online users where depending on what player's
-	// controller presses 'Start' establishes the player to actually login to the game with.
+	// controller presses 'Start' establishes the player to actually log in to the game with.
 	if (!UserSubsystem->ShouldWaitForStartInput())
 	{
 		// Start the auto login process, this should finish quickly and will use the default input device id
@@ -139,32 +151,35 @@ void ULyraFrontendStateComponent::FlowStep_TryShowPressStartScreen(FControlFlowN
 	if (UPrimaryGameLayout* RootLayout = UPrimaryGameLayout::GetPrimaryGameLayoutForPrimaryPlayer(this))
 	{
 		constexpr bool bSuspendInputUntilComplete = true;
-		RootLayout->PushWidgetToLayerStackAsync<UCommonActivatableWidget>(FrontendTags::TAG_UI_LAYER_MENU, bSuspendInputUntilComplete, PressStartScreenClass,
-			[this, SubFlow](EAsyncWidgetLayerState State, UCommonActivatableWidget* Screen) {
-			switch (State)
+		RootLayout->PushWidgetToLayerStackAsync<UCommonActivatableWidget>(
+			FrontendTags::TAG_UI_LAYER_MENU, bSuspendInputUntilComplete, PressStartScreenClass,
+			[this, SubFlow](EAsyncWidgetLayerState State, UCommonActivatableWidget* Screen)
 			{
-			case EAsyncWidgetLayerState::AfterPush:
-				bShouldShowLoadingScreen = false;
-				Screen->OnDeactivated().AddWeakLambda(this, [this, SubFlow]() {
+				switch (State)
+				{
+				case EAsyncWidgetLayerState::AfterPush:
+					bShouldShowLoadingScreen = false;
+					Screen->OnDeactivated().AddWeakLambda(this, [this, SubFlow]()
+					{
+						SubFlow->ContinueFlow();
+					});
+					break;
+				case EAsyncWidgetLayerState::Canceled:
+					bShouldShowLoadingScreen = false;
 					SubFlow->ContinueFlow();
-				});
-				break;
-			case EAsyncWidgetLayerState::Canceled:
-				bShouldShowLoadingScreen = false;
-				SubFlow->ContinueFlow();
-				return;
-			}
-		});
+				default: ;
+				}
+			});
 	}
 }
 
-void ULyraFrontendStateComponent::OnUserInitialized(const UCommonUserInfo* UserInfo, bool bSuccess, FText Error, ECommonUserPrivilege RequestedPrivilege, ECommonUserOnlineContext OnlineContext)
+void ULyraFrontendStateComponent::OnUserInitialized(const UCommonUserInfo* UserInfo, bool bSuccess, FText Error, ECommonUserPrivilege RequestedPrivilege,
+                                                    ECommonUserOnlineContext OnlineContext)
 {
-	FControlFlowNodePtr FlowToContinue = InProgressPressStartScreen;
-	UGameInstance* GameInstance = UGameplayStatics::GetGameInstance(this);
-	UCommonUserSubsystem* UserSubsystem = GameInstance->GetSubsystem<UCommonUserSubsystem>();
+	const FControlFlowNodePtr FlowToContinue = InProgressPressStartScreen;
+	const UGameInstance* GameInstance = UGameplayStatics::GetGameInstance(this);
 
-	if (ensure(FlowToContinue.IsValid() && UserSubsystem))
+	if (UCommonUserSubsystem* UserSubsystem = GameInstance->GetSubsystem<UCommonUserSubsystem>(); ensure(FlowToContinue.IsValid() && UserSubsystem))
 	{
 		UserSubsystem->OnUserInitializeComplete.RemoveDynamic(this, &ULyraFrontendStateComponent::OnUserInitialized);
 		InProgressPressStartScreen.Reset();
@@ -184,32 +199,34 @@ void ULyraFrontendStateComponent::OnUserInitialized(const UCommonUserInfo* UserI
 
 void ULyraFrontendStateComponent::FlowStep_TryJoinRequestedSession(FControlFlowNodeRef SubFlow)
 {
-	UCommonGameInstance* GameInstance = Cast<UCommonGameInstance>(UGameplayStatics::GetGameInstance(this));
-	if (GameInstance->GetRequestedSession() != nullptr && GameInstance->CanJoinRequestedSession())
+	
+	if (UCommonGameInstance* GameInstance = Cast<UCommonGameInstance>(UGameplayStatics::GetGameInstance(this)); GameInstance->GetRequestedSession() != nullptr
+		&& GameInstance->CanJoinRequestedSession())
 	{
-		UCommonSessionSubsystem* SessionSubsystem = GameInstance->GetSubsystem<UCommonSessionSubsystem>();
-		if (ensure(SessionSubsystem))
+		EpicDebug::Print("FlowStep_TryJoinRequestedSession");
+		if (UCommonSessionSubsystem* SessionSubsystem = GameInstance->GetSubsystem<UCommonSessionSubsystem>(); ensure(SessionSubsystem))
 		{
 			// Bind to session join completion to continue or cancel the flow
 			// TODO:  Need to ensure that after session join completes, the server travel completes.
-			OnJoinSessionCompleteEventHandle = SessionSubsystem->OnJoinSessionCompleteEvent.AddWeakLambda(this, [this, SubFlow, SessionSubsystem](const FOnlineResultInformation& Result)
-			{
-				// Unbind delegate. SessionSubsystem is the object triggering this event, so it must still be valid.
-				SessionSubsystem->OnJoinSessionCompleteEvent.Remove(OnJoinSessionCompleteEventHandle);
-				OnJoinSessionCompleteEventHandle.Reset();
+			OnJoinSessionCompleteEventHandle = SessionSubsystem->OnJoinSessionCompleteEvent.AddWeakLambda(
+				this, [this, SubFlow, SessionSubsystem](const FOnlineResultInformation& Result)
+				{
+					// Unbind delegate. SessionSubsystem is the object triggering this event, so it must still be valid.
+					SessionSubsystem->OnJoinSessionCompleteEvent.Remove(OnJoinSessionCompleteEventHandle);
+					OnJoinSessionCompleteEventHandle.Reset();
 
-				if (Result.bWasSuccessful)
-				{
-					// No longer transitioning to the main menu
-					SubFlow->CancelFlow();
-				}
-				else
-				{
-					// Proceed to the main menu
-					SubFlow->ContinueFlow();
-					return;
-				}
-			});
+					if (Result.bWasSuccessful)
+					{
+						EpicDebug::Print("No longer transitioning to the main menu!");
+						// No longer transitioning to the main menu
+						SubFlow->CancelFlow();
+					}
+					else
+					{
+						// Proceed to the main menu
+						SubFlow->ContinueFlow();
+					}
+				});
 			GameInstance->JoinRequestedSession();
 			return;
 		}
@@ -220,23 +237,28 @@ void ULyraFrontendStateComponent::FlowStep_TryJoinRequestedSession(FControlFlowN
 
 void ULyraFrontendStateComponent::FlowStep_TryShowMainScreen(FControlFlowNodeRef SubFlow)
 {
+	
 	if (UPrimaryGameLayout* RootLayout = UPrimaryGameLayout::GetPrimaryGameLayoutForPrimaryPlayer(this))
 	{
-		constexpr bool bSuspendInputUntilComplete = true;
-		RootLayout->PushWidgetToLayerStackAsync<UCommonActivatableWidget>(FrontendTags::TAG_UI_LAYER_MENU, bSuspendInputUntilComplete, MainScreenClass,
-			[this, SubFlow](EAsyncWidgetLayerState State, UCommonActivatableWidget* Screen) {
-			switch (State)
+		const bool bSuspendInputUntilComplete = true;
+		EpicDebug::Print("FlowStep_TryShowMainScreen");
+		RootLayout->PushWidgetToLayerStackAsync<UCommonActivatableWidget>(
+			FrontendTags::TAG_UI_LAYER_MENU, bSuspendInputUntilComplete, MainScreenClass,
+			[this, SubFlow](const EAsyncWidgetLayerState State, UCommonActivatableWidget* Screen)
 			{
-			case EAsyncWidgetLayerState::AfterPush:
-				bShouldShowLoadingScreen = false;
-				SubFlow->ContinueFlow();
-				return;
-			case EAsyncWidgetLayerState::Canceled:
-				bShouldShowLoadingScreen = false;
-				SubFlow->ContinueFlow();
-				return;
-			}
-		});
+				switch (State)
+				{
+				case EAsyncWidgetLayerState::AfterPush:
+					EpicDebug::Print("FlowStep_TryShowMainScreen AfterPush");
+					bShouldShowLoadingScreen = false;
+					SubFlow->ContinueFlow();
+					return;
+				case EAsyncWidgetLayerState::Canceled:
+					EpicDebug::Print("FlowStep_TryShowMainScreen Canceled");
+					bShouldShowLoadingScreen = false;
+					SubFlow->ContinueFlow();
+				default: ;
+				}
+			});
 	}
 }
-

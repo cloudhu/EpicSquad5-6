@@ -18,7 +18,7 @@ class UIndicatorDescriptor;
 class ULyraIndicatorManagerComponent;
 struct FSlateBrush;
 
-class SActorCanvas : public SPanel, public FAsyncMixin, public FGCObject
+class EPICSQUAD_API SActorCanvas : public SPanel, public FAsyncMixin, public FGCObject
 {
 public:
 	/** ActorCanvas-specific slot class */

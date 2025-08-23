@@ -47,9 +47,7 @@ void ULyraUIManagerSubsystem::SyncRootLayoutVisibilityToShowHUD()
 			
 			if (const APlayerController* PC = LocalPlayer->GetPlayerController(GetWorld()))
 			{
-				const AHUD* HUD = PC->GetHUD();
-
-				if (HUD && !HUD->bShowHUD)
+				if (const AHUD* HUD = PC->GetHUD(); HUD && !HUD->bShowHUD)
 				{
 					bShouldShowUI = false;
 				}
@@ -57,8 +55,7 @@ void ULyraUIManagerSubsystem::SyncRootLayoutVisibilityToShowHUD()
 
 			if (UPrimaryGameLayout* RootLayout = Policy->GetRootLayout(CastChecked<UCommonLocalPlayer>(LocalPlayer)))
 			{
-				const ESlateVisibility DesiredVisibility = bShouldShowUI ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed;
-				if (DesiredVisibility != RootLayout->GetVisibility())
+				if (const ESlateVisibility DesiredVisibility = bShouldShowUI ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed; DesiredVisibility != RootLayout->GetVisibility())
 				{
 					RootLayout->SetVisibility(DesiredVisibility);	
 				}

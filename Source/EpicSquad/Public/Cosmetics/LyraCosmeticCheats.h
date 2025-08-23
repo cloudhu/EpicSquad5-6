@@ -12,7 +12,7 @@ struct FFrame;
 
 /** Cheats related to bots */
 UCLASS(NotBlueprintable)
-class ULyraCosmeticCheats final : public UCheatManagerExtension
+class EPICSQUAD_API ULyraCosmeticCheats final : public UCheatManagerExtension
 {
 	GENERATED_BODY()
 

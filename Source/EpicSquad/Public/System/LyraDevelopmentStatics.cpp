@@ -1,6 +1,9 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "LyraDevelopmentStatics.h"
+
+#include "CommonActivatableWidget.h"
+
 #include "AssetRegistry/ARFilter.h"
 #include "AssetRegistry/AssetData.h"
 #include "Development/LyraDeveloperSettings.h"
@@ -8,6 +11,9 @@
 #include "Engine/Engine.h"
 #include "AssetRegistry/AssetRegistryModule.h"
 #include "Engine/World.h"
+
+#include "GameSettings/EpicDeveloperSettings.h"
+
 #include "Misc/PackageName.h"
 #include "Modules/ModuleManager.h"
 
@@ -196,5 +202,23 @@ UClass* ULyraDevelopmentStatics::FindClassByShortName(const FString& SearchToken
 	}
 
 	return ResultClass;
+}
+
+TSoftClassPtr<UCommonActivatableWidget> ULyraDevelopmentStatics::GetSoftWidgetClassByTag(FGameplayTag InWidgetTag)
+{
+	const UEpicDeveloperSettings* FrontendDeveloperSettings = GetDefault<UEpicDeveloperSettings>();
+
+	checkf(FrontendDeveloperSettings->FrontendWidgetMap.Contains(InWidgetTag),TEXT("Could not find the corresponding widget under the tag %s"),*InWidgetTag.ToString());
+
+	return FrontendDeveloperSettings->FrontendWidgetMap.FindRef(InWidgetTag);
+}
+
+TSoftObjectPtr<UTexture2D> ULyraDevelopmentStatics::GetSoftImageByTag(FGameplayTag InImageTag)
+{
+	const UEpicDeveloperSettings* FrontendDeveloperSettings = GetDefault<UEpicDeveloperSettings>();
+
+	checkf(FrontendDeveloperSettings->OptionsScreenSoftImageMap.Contains(InImageTag),TEXT("Could not find an image accociated with tag %s"),*InImageTag.ToString());
+
+	return FrontendDeveloperSettings->OptionsScreenSoftImageMap.FindRef(InImageTag);
 }
 

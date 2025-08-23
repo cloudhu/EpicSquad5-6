@@ -20,7 +20,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FQueryReplayAsyncDelegate, ULyraRepl
  * Watches for team changes in the specified player controller
  */
 UCLASS()
-class UAsyncAction_QueryReplays : public UBlueprintAsyncActionBase
+class EPICSQUAD_API UAsyncAction_QueryReplays : public UBlueprintAsyncActionBase
 {
 	GENERATED_BODY()
 

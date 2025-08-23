@@ -6,8 +6,6 @@
 #include "Containers/Ticker.h"
 #include "GameSettingFilterState.h"
 #include "GameplayTagContainer.h"
-#include "Misc/ExpressionParserTypesFwd.h"
-
 #include "GameSettingPanel.generated.h"
 
 #define UE_API GAMESETTINGS_API
@@ -37,7 +35,10 @@ public:
 	// Focus transitioning to subwidgets for the gamepad
 	UE_API virtual FReply NativeOnFocusReceived(const FGeometry& InGeometry, const FFocusEvent& InFocusEvent) override;
 
-	/**  */
+	/**
+	 * Sets the registry for this component, allowing it to store and retrieve settings.
+	 * @param InRegistry The registry object to be set. This object is used for managing the component's settings.
+	 */
 	UE_API void SetRegistry(UGameSettingRegistry* InRegistry);
 
 	/** Sets the filter for this panel, restricting which settings are available currently. */
@@ -68,12 +69,12 @@ public:
 
 protected:
 	UE_API void RegisterRegistryEvents();
-	UE_API void UnregisterRegistryEvents();
+	UE_API void UnregisterRegistryEvents() const;
 	
 	UE_API void HandleSettingItemHoveredChanged(UObject* Item, bool bHovered);
 	UE_API void HandleSettingItemSelectionChanged(UObject* Item);
-	UE_API void FillSettingDetails(UGameSetting* InSetting);
-	UE_API void HandleSettingNamedAction(UGameSetting* Setting, FGameplayTag GameSettings_Action_Tag);
+	UE_API void FillSettingDetails(UGameSetting* InSetting) const;
+	UE_API void HandleSettingNamedAction(UGameSetting* Setting, FGameplayTag GameSettings_Action_Tag) const;
 	UE_API void HandleSettingNavigation(UGameSetting* Setting);
 	UE_API void HandleSettingEditConditionsChanged(UGameSetting* Setting);
 

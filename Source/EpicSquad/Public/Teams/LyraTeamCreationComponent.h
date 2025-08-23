@@ -16,7 +16,7 @@ class APlayerController;
 class ULyraTeamDisplayAsset;
 
 UCLASS(Blueprintable)
-class ULyraTeamCreationComponent : public UGameStateComponent
+class EPICSQUAD_API ULyraTeamCreationComponent : public UGameStateComponent
 {
 	GENERATED_BODY()
 

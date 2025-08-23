@@ -2,11 +2,14 @@
 
 #pragma once
 
+#include "GameplayTagContainer.h"
+
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "Templates/SubclassOf.h"
 
 #include "LyraDevelopmentStatics.generated.h"
 
+class UCommonActivatableWidget;
 class UClass;
 class UObject;
 class UWorld;
@@ -14,7 +17,7 @@ struct FAssetData;
 struct FFrame;
 
 UCLASS()
-class ULyraDevelopmentStatics : public UBlueprintFunctionLibrary
+class EPICSQUAD_API ULyraDevelopmentStatics : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 
@@ -47,6 +50,11 @@ public:
 		return FindClassByShortName(SearchToken, DesiredClass::StaticClass(), bLogFailures);
 	}
 
+	UFUNCTION(BlueprintPure, Category = "Frontend Function Library")
+	static TSoftClassPtr<UCommonActivatableWidget> GetSoftWidgetClassByTag( UPARAM(meta = (Categories = "UI.Widget")) FGameplayTag InWidgetTag);
+
+	UFUNCTION(BlueprintPure, Category = "Frontend Function Library")
+	static TSoftObjectPtr<UTexture2D> GetSoftImageByTag(UPARAM(meta = (Categories = "UI.Image")) FGameplayTag InImageTag);
 private:
 	static TArray<FAssetData> GetAllBlueprints();
 	static UClass* FindBlueprintClass(const FString& TargetNameRaw, UClass* DesiredBaseClass);

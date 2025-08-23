@@ -17,13 +17,13 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FTeamObservedAsyncDelegate, bool, b
  * Watches for team changes in the specified object
  */
 UCLASS()
-class UAsyncAction_ObserveTeam : public UCancellableAsyncAction
+class EPICSQUAD_API UAsyncAction_ObserveTeam : public UCancellableAsyncAction
 {
 	GENERATED_UCLASS_BODY()
 
 public:
 	// Watches for team changes on the specified team agent
-	//  - It will will fire once immediately to give the current team assignment
+	//  - It will fire once immediately to give the current team assignment
 	//  - For anything that can ever belong to a team (implements ILyraTeamAgentInterface),
 	//    it will also listen for team assignment changes in the future
 	UFUNCTION(BlueprintCallable, meta=(BlueprintInternalUseOnly="true", Keywords="Watch"))

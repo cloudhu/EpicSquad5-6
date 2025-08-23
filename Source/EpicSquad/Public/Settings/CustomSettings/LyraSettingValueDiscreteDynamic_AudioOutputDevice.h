@@ -13,7 +13,7 @@ struct FFrame;
 enum class EAudioDeviceChangedRole : uint8;
 
 UCLASS()
-class ULyraSettingValueDiscreteDynamic_AudioOutputDevice : public UGameSettingValueDiscreteDynamic
+class EPICSQUAD_API ULyraSettingValueDiscreteDynamic_AudioOutputDevice : public UGameSettingValueDiscreteDynamic
 {
 	GENERATED_BODY()
 	

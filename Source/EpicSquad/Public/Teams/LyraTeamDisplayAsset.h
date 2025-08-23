@@ -15,7 +15,7 @@ class UTexture;
 
 // Represents the display information for team definitions (e.g., colors, display names, textures, etc...)
 UCLASS(BlueprintType)
-class ULyraTeamDisplayAsset : public UDataAsset
+class EPICSQUAD_API ULyraTeamDisplayAsset : public UDataAsset
 {
 	GENERATED_BODY()
 	

@@ -5,7 +5,6 @@
 #include "Components/MeshComponent.h"
 #include "NiagaraComponent.h"
 #include "Materials/MaterialInstanceDynamic.h"
-#include "Engine/Texture.h"
 #include "Teams/LyraTeamSubsystem.h"
 #include "UObject/UObjectIterator.h"
 

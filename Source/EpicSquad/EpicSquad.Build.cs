@@ -10,8 +10,11 @@ public class EpicSquad : ModuleRules
 
 		PublicDependencyModuleNames.AddRange([
 			"Core",
+			"CoreOnline",
 			"CoreUObject",
+			"ApplicationCore",
 			"Engine",
+			"PhysicsCore",
 			"InputCore",
 			"EnhancedInput",
 			"AIModule",
@@ -49,14 +52,14 @@ public class EpicSquad : ModuleRules
 			"GameSubtitles",
 			"CommonLoadingScreen",
 			"DataRegistry",
-			"CommonLoadingScreen",
+			"CommonGame",
 			"ControlFlows",
 			"GameFeatures",			
 			"ReplicationGraph",
 			"ModularGameplay",
 			"ModularGameplayActors",
-			"ApplicationCore",
 			"PropertyPath",
+			"Hotfix",
 		]);
 
 		PrivateDependencyModuleNames.AddRange([
@@ -84,7 +87,6 @@ public class EpicSquad : ModuleRules
 			"NetworkReplayStreaming",
 			"UIExtension",
 			"ClientPilot",
-			"AudioModulation",
 			"EngineSettings",
 			"DTLSHandlerComponent",
 			"Json",

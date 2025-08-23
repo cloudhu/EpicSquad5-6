@@ -15,7 +15,7 @@ class UObject;
 struct FFrame;
 
 UCLASS(Abstract)
-class ALyraTeamInfoBase : public AInfo
+class EPICSQUAD_API ALyraTeamInfoBase : public AInfo
 {
 	GENERATED_BODY()
 

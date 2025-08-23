@@ -8,7 +8,7 @@
 #include "Engine/DeveloperSettings.h"
 #include "EpicDeveloperSettings.generated.h"
 
-class UWidget_ActivatableBase;
+class UCommonActivatableWidget;
 /**
  * 
  */
@@ -19,7 +19,7 @@ class EPICSQUAD_API UEpicDeveloperSettings : public UDeveloperSettings
 
 public:
 	UPROPERTY(Config, EditAnywhere, Category = "Widget Reference", meta = (ForceInlineRow, Categories = "UI.Widget"))
-	TMap< FGameplayTag,TSoftClassPtr<UWidget_ActivatableBase> > FrontendWidgetMap;
+	TMap< FGameplayTag,TSoftClassPtr<UCommonActivatableWidget> > FrontendWidgetMap;
 
 	UPROPERTY(Config, EditAnywhere, Category = "UI Image Reference", meta = (ForceInlineRow, Categories = "UI.Image"))
 	TMap< FGameplayTag, TSoftObjectPtr<UTexture2D> > OptionsScreenSoftImageMap;

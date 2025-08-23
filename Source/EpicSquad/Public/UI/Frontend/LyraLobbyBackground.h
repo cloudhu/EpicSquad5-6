@@ -18,7 +18,6 @@ class ULyraLobbyBackground : public UPrimaryDataAsset
 	GENERATED_BODY()
 
 public:
-	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TSoftObjectPtr<UWorld> BackgroundLevel;
 };

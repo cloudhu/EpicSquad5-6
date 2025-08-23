@@ -17,7 +17,7 @@ struct FFrame;
  * their visibility based on user settings.
  */
  UCLASS(Abstract)
-class ULyraPerfStatContainerBase : public UCommonUserWidget
+class EPICSQUAD_API ULyraPerfStatContainerBase : public UCommonUserWidget
 {
 public:
 	ULyraPerfStatContainerBase(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());

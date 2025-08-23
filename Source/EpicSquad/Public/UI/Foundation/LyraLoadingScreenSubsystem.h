@@ -4,8 +4,6 @@
 
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "Templates/SubclassOf.h"
-
-#include "UObject/WeakObjectPtr.h"
 #include "LyraLoadingScreenSubsystem.generated.h"
 
 #define UE_API EPICSQUAD_API

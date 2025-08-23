@@ -15,7 +15,7 @@ class UObject;
 struct FFrame;
 
 UCLASS()
-class ULyraSystemStatics : public UBlueprintFunctionLibrary
+class EPICSQUAD_API ULyraSystemStatics : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 
