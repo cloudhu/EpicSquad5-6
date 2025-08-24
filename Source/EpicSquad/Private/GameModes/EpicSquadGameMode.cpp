@@ -3,13 +3,34 @@
 
 #include "GameModes/EpicSquadGameMode.h"
 
+#include "CommonSessionSubsystem.h"
+#include "CommonUserSubsystem.h"
+#include "GameMapsSettings.h"
+
+#include "Development/LyraDeveloperSettings.h"
+
+#include "Engine/StreamableManager.h"
+
+#include "GameModes/LyraGameState.h"
+
+#include "Kismet/GameplayStatics.h"
+
 #include "Player/EpicSquadPlayerCharacter.h"
 #include "Player/EpicSquadPlayerController.h"
 #include "Player/PlayerState_Base.h"
 
-AEpicSquadGameMode::AEpicSquadGameMode()
+#include "System/LyraGameSession.h"
+
+#include "UI/LyraHUD.h"
+
+AEpicSquadGameMode::AEpicSquadGameMode(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer)
 {
 	// use our custom PlayerController class
+	GameStateClass = ALyraGameState::StaticClass();
+	GameSessionClass = ALyraGameSession::StaticClass();
+	//ReplaySpectatorPlayerControllerClass = ALyraReplayPlayerController::StaticClass();
+	HUDClass = ALyraHUD::StaticClass();
 	PlayerControllerClass = AEpicSquadPlayerController::StaticClass();
 	DefaultPawnClass = AEpicSquadPlayerCharacter::StaticClass();
 	PlayerStateClass = APlayerState_Base::StaticClass();
@@ -27,3 +48,6 @@ AEpicSquadGameMode::AEpicSquadGameMode()
 	// 	PlayerControllerClass = PlayerControllerBPClass.Class;
 	// }
 }
+
+
+

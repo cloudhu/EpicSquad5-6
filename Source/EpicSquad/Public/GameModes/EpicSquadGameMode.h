@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/NinjaCombatGameMode.h"
-
 #include "EpicSquadGameMode.generated.h"
 
 /**
@@ -20,7 +19,8 @@ class EPICSQUAD_API AEpicSquadGameMode : public ANinjaCombatGameMode
 public:
 
 	/** Constructor */
-	AEpicSquadGameMode();
+	AEpicSquadGameMode(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+	
 };
 
 

@@ -5,6 +5,7 @@
 #include "Messaging/CommonGameDialog.h"
 #include "NativeGameplayTags.h"
 #include "CommonLocalPlayer.h"
+#include "LyraUIManagerSubsystem.h"
 #include "PrimaryGameLayout.h"
 #include "System/LyraDevelopmentStatics.h"
 #include "Widgets/CommonActivatableWidgetContainer.h"
@@ -21,23 +22,25 @@ void ULyraUIMessaging::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
 	ConfirmationDialogClassPtr = ULyraDevelopmentStatics::GetSoftWidgetClassByTag(TAG_UI_WIDGET_CONFIRMDIALOG).LoadSynchronous();
-	
+
 	ErrorDialogClassPtr = ULyraDevelopmentStatics::GetSoftWidgetClassByTag(TAG_UI_WIDGET_ERRORDIALOG).LoadSynchronous();
-	
 }
 
 void ULyraUIMessaging::ShowConfirmation(UCommonGameDialogDescriptor* DialogDescriptor, FCommonMessagingResultDelegate ResultCallback)
 {
-	checkf(ConfirmationDialogClassPtr.Get(),TEXT("Can not load ConfirmationDialogClassPtr in ULyraUIMessaging::Initialize"));
-	if (UPrimaryGameLayout* RootLayout = UPrimaryGameLayout::GetPrimaryGameLayoutForPrimaryPlayer(GetLocalPlayer()))
+	checkf(ConfirmationDialogClassPtr.Get(), TEXT("Can not load ConfirmationDialogClassPtr in ULyraUIMessaging::Initialize"));
+	if (const ULyraUIManagerSubsystem* UIManager = ULyraUIManagerSubsystem::Get(GetLocalPlayer()))
 	{
-		//EpicDebug::Print(ConfirmationDialogClassPtr.Get()?"True":"False");
-		RootLayout->PushWidgetToLayerStack<UCommonGameDialog>(
-			TAG_UI_LAYER_MODAL, ConfirmationDialogClassPtr,
-			[DialogDescriptor, ResultCallback](UCommonGameDialog& Dialog)
-			{
-				Dialog.SetupDialog(DialogDescriptor, ResultCallback);
-			});
+		if (UPrimaryGameLayout* RootLayout = UIManager->GetCreatedPrimaryLayout())
+		{
+			//EpicDebug::Print(ConfirmationDialogClassPtr.Get()?"True":"False");
+			RootLayout->PushWidgetToLayerStack<UCommonGameDialog>(
+				TAG_UI_LAYER_MODAL, ConfirmationDialogClassPtr,
+				[DialogDescriptor, ResultCallback](UCommonGameDialog& Dialog)
+				{
+					Dialog.SetupDialog(DialogDescriptor, ResultCallback);
+				});
+		}
 	}
 	else if (const UCommonLocalPlayer* LocalPlayer = GetLocalPlayer<UCommonLocalPlayer>())
 	{
@@ -55,18 +58,21 @@ void ULyraUIMessaging::ShowConfirmation(UCommonGameDialogDescriptor* DialogDescr
 
 void ULyraUIMessaging::ShowError(UCommonGameDialogDescriptor* DialogDescriptor, FCommonMessagingResultDelegate ResultCallback)
 {
-	checkf(ErrorDialogClassPtr.Get(),TEXT("Can not load ErrorDialogClassPtr in ULyraUIMessaging::Initialize"));
-	if (UPrimaryGameLayout* RootLayout = UPrimaryGameLayout::GetPrimaryGameLayoutForPrimaryPlayer(GetLocalPlayer()))
+	checkf(ErrorDialogClassPtr.Get(), TEXT("Can not load ErrorDialogClassPtr in ULyraUIMessaging::Initialize"));
+	if (const ULyraUIManagerSubsystem* UIManager = ULyraUIManagerSubsystem::Get(GetLocalPlayer()))
 	{
-		//EpicDebug::Print(ConfirmationDialogClassPtr.Get()?"True":"False");
-		RootLayout->PushWidgetToLayerStack<UCommonGameDialog>(
-			TAG_UI_LAYER_MODAL, ErrorDialogClassPtr,
-			[DialogDescriptor, ResultCallback](UCommonGameDialog& Dialog)
-			{
-				Dialog.SetupDialog(DialogDescriptor, ResultCallback);
-			});
+		if (UPrimaryGameLayout* RootLayout = UIManager->GetCreatedPrimaryLayout())
+		{
+			//EpicDebug::Print(ConfirmationDialogClassPtr.Get()?"True":"False");
+			RootLayout->PushWidgetToLayerStack<UCommonGameDialog>(
+				TAG_UI_LAYER_MODAL, ErrorDialogClassPtr,
+				[DialogDescriptor, ResultCallback](UCommonGameDialog& Dialog)
+				{
+					Dialog.SetupDialog(DialogDescriptor, ResultCallback);
+				});
+		}
 	}
-	else  if (const UCommonLocalPlayer* LocalPlayer = GetLocalPlayer<UCommonLocalPlayer>())
+	else if (const UCommonLocalPlayer* LocalPlayer = GetLocalPlayer<UCommonLocalPlayer>())
 	{
 		if (UPrimaryGameLayout* Layout = LocalPlayer->GetRootUILayout())
 		{

@@ -3,16 +3,16 @@
 #include "CommonInputBaseTypes.h"
 #include "EnhancedInputSubsystems.h"
 #include "CustomSettings/LyraSettingKeyboardInput.h"
-#include "DataSource/GameSettingDataSource.h"
 #include "EditCondition/WhenCondition.h"
 #include "GameSettingCollection.h"
 #include "GameSettingValueDiscreteDynamic.h"
 #include "GameSettingValueScalarDynamic.h"
 #include "LyraGameSettingRegistry.h"
-#include "LyraSettingsLocal.h"
 #include "LyraSettingsShared.h"
+
+#include "Common/DebugHelper.h"
+
 #include "Player/LyraLocalPlayer.h"
-#include "PlayerMappableInputConfig.h"
 
 class ULocalPlayer;
 
@@ -28,10 +28,11 @@ UGameSettingCollection* ULyraGameSettingRegistry::InitializeMouseAndKeyboardSett
 	const TSharedRef<FWhenCondition> WhenPlatformSupportsMouseAndKeyboard = MakeShared<FWhenCondition>(
 		[](const ULocalPlayer*, FGameSettingEditableState& InOutEditState)
 		{
-			const UCommonInputPlatformSettings* PlatformInput = UPlatformSettingsManager::Get().GetSettingsForPlatform<UCommonInputPlatformSettings>();
-			if (!PlatformInput->SupportsInputType(ECommonInputType::MouseAndKeyboard))
+			if (const UCommonInputPlatformSettings* PlatformInput = UPlatformSettingsManager::Get().GetSettingsForPlatform<UCommonInputPlatformSettings>(); !
+				PlatformInput->SupportsInputType(ECommonInputType::MouseAndKeyboard))
 			{
 				InOutEditState.Kill(TEXT("Platform does not support mouse and keyboard"));
+				EpicDebug::Print(TEXT("Platform does not support mouse and keyboard"));
 			}
 		});
 
@@ -48,7 +49,8 @@ UGameSettingCollection* ULyraGameSettingRegistry::InitializeMouseAndKeyboardSett
 			UGameSettingValueScalarDynamic* Setting = NewObject<UGameSettingValueScalarDynamic>();
 			Setting->SetDevName(TEXT("MouseSensitivityYaw"));
 			Setting->SetDisplayName(LOCTEXT("MouseSensitivityYaw_Name", "X-Axis Sensitivity"));
-			Setting->SetDescriptionRichText(LOCTEXT("MouseSensitivityYaw_Description", "Sets the sensitivity of the mouse's horizontal (x) axis. With higher settings the camera will move faster when looking left and right with the mouse."));
+			Setting->SetDescriptionRichText(LOCTEXT("MouseSensitivityYaw_Description",
+			                                        "Sets the sensitivity of the mouse's horizontal (x) axis. With higher settings the camera will move faster when looking left and right with the mouse."));
 
 			Setting->SetDynamicGetter(GET_SHARED_SETTINGS_FUNCTION_PATH(GetMouseSensitivityX));
 			Setting->SetDynamicSetter(GET_SHARED_SETTINGS_FUNCTION_PATH(SetMouseSensitivityX));
@@ -66,7 +68,8 @@ UGameSettingCollection* ULyraGameSettingRegistry::InitializeMouseAndKeyboardSett
 			UGameSettingValueScalarDynamic* Setting = NewObject<UGameSettingValueScalarDynamic>();
 			Setting->SetDevName(TEXT("MouseSensitivityPitch"));
 			Setting->SetDisplayName(LOCTEXT("MouseSensitivityPitch_Name", "Y-Axis Sensitivity"));
-			Setting->SetDescriptionRichText(LOCTEXT("MouseSensitivityPitch_Description", "Sets the sensitivity of the mouse's vertical (y) axis. With higher settings the camera will move faster when looking up and down with the mouse."));
+			Setting->SetDescriptionRichText(LOCTEXT("MouseSensitivityPitch_Description",
+			                                        "Sets the sensitivity of the mouse's vertical (y) axis. With higher settings the camera will move faster when looking up and down with the mouse."));
 
 			Setting->SetDynamicGetter(GET_SHARED_SETTINGS_FUNCTION_PATH(GetMouseSensitivityY));
 			Setting->SetDynamicSetter(GET_SHARED_SETTINGS_FUNCTION_PATH(SetMouseSensitivityY));
@@ -84,7 +87,8 @@ UGameSettingCollection* ULyraGameSettingRegistry::InitializeMouseAndKeyboardSett
 			UGameSettingValueScalarDynamic* Setting = NewObject<UGameSettingValueScalarDynamic>();
 			Setting->SetDevName(TEXT("MouseTargetingMultiplier"));
 			Setting->SetDisplayName(LOCTEXT("MouseTargetingMultiplier_Name", "Targeting Sensitivity"));
-			Setting->SetDescriptionRichText(LOCTEXT("MouseTargetingMultiplier_Description", "Sets the modifier for reducing mouse sensitivity when targeting. 100% will have no slow down when targeting. Lower settings will have more slow down when targeting."));
+			Setting->SetDescriptionRichText(LOCTEXT("MouseTargetingMultiplier_Description",
+			                                        "Sets the modifier for reducing mouse sensitivity when targeting. 100% will have no slow down when targeting. Lower settings will have more slow down when targeting."));
 
 			Setting->SetDynamicGetter(GET_SHARED_SETTINGS_FUNCTION_PATH(GetTargetingMultiplier));
 			Setting->SetDynamicSetter(GET_SHARED_SETTINGS_FUNCTION_PATH(SetTargetingMultiplier));
@@ -129,7 +133,7 @@ UGameSettingCollection* ULyraGameSettingRegistry::InitializeMouseAndKeyboardSett
 		}
 		//----------------------------------------------------------------------------------
 	}
-
+	
 	// Bindings for Mouse & Keyboard - Automatically Generated
 	////////////////////////////////////////////////////////////////////////////////////
 	{
@@ -138,8 +142,8 @@ UGameSettingCollection* ULyraGameSettingRegistry::InitializeMouseAndKeyboardSett
 		KeyBinding->SetDisplayName(LOCTEXT("KeyBindingCollection_Name", "Keyboard & Mouse"));
 		Screen->AddSetting(KeyBinding);
 
-		const UEnhancedInputLocalPlayerSubsystem* EISubsystem = InLocalPlayer->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
-		const UEnhancedInputUserSettings* UserSettings = EISubsystem->GetUserSettings();
+		const UEnhancedInputLocalPlayerSubsystem* EiSubsystem = InLocalPlayer->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
+		const UEnhancedInputUserSettings* UserSettings = EiSubsystem->GetUserSettings();
 
 		// If you want to just get one profile pair, then you can do UserSettings->GetCurrentProfile
 
@@ -150,51 +154,52 @@ UGameSettingCollection* ULyraGameSettingRegistry::InitializeMouseAndKeyboardSett
 		// If there isn't one, then it will create a new one and initialize it
 		auto GetOrCreateSettingCollection = [&CategoryToSettingCollection, &Screen](FText DisplayCategory) -> UGameSettingCollection*
 		{
-			static const FString DefaultDevName = TEXT("Default_KBM");
+			//static const FString DefaultDevName = TEXT("Default_KBM");
 			static const FText DefaultDevDisplayName = NSLOCTEXT("LyraInputSettings", "LyraInputDefaults", "Default Experiences");
 
 			if (DisplayCategory.IsEmpty())
 			{
 				DisplayCategory = DefaultDevDisplayName;
 			}
-			
-			FString DisplayCatString = DisplayCategory.ToString();
-			
+
+			const FString DisplayCatString = DisplayCategory.ToString();
+			EpicDebug::Print(TEXT("DisplayCatString: ") + DisplayCatString);
 			if (UGameSettingCollection** ExistingCategory = CategoryToSettingCollection.Find(DisplayCatString))
 			{
 				return *ExistingCategory;
 			}
-			
+
 			UGameSettingCollection* ConfigSettingCollection = NewObject<UGameSettingCollection>();
 			ConfigSettingCollection->SetDevName(FName(DisplayCatString));
 			ConfigSettingCollection->SetDisplayName(DisplayCategory);
 			Screen->AddSetting(ConfigSettingCollection);
 			CategoryToSettingCollection.Add(DisplayCatString, ConfigSettingCollection);
-			
+
 			return ConfigSettingCollection;
 		};
 
 		static TSet<FName> CreatedMappingNames;
 		CreatedMappingNames.Reset();
+
+		// We only want keyboard keys on this settings screen, so we will filter down by mappings
+		// that are set to keyboard keys
+		FPlayerMappableKeyQueryOptions Options = {};
+		Options.KeyToMatch = EKeys::W;
+		Options.bMatchBasicKeyTypes = true;
 		
 		for (const TPair<FString, TObjectPtr<UEnhancedPlayerMappableKeyProfile>>& ProfilePair : UserSettings->GetAllAvailableKeyProfiles())
 		{
 			const FString& ProfileName = ProfilePair.Key;
-			const TObjectPtr<UEnhancedPlayerMappableKeyProfile>& Profile = ProfilePair.Value;
-
-			for (const TPair<FName, FKeyMappingRow>& RowPair : Profile->GetPlayerMappingRows())
+			EpicDebug::Print(TEXT("ProfileName :") + ProfileName);
+			for (const TObjectPtr<UEnhancedPlayerMappableKeyProfile>& Profile = ProfilePair.Value; const TPair<FName, FKeyMappingRow>& RowPair : Profile->
+			     GetPlayerMappingRows())
 			{
 				// Create a setting row for anything with valid mappings and that we haven't created yet
+				EpicDebug::Print(RowPair.Value.HasAnyMappings() ? " RowPair.Value.HasAnyMappings : True" : "RowPair.Value.HasAnyMappings : false");
 				if (RowPair.Value.HasAnyMappings() /* && !CreatedMappingNames.Contains(RowPair.Key)*/)
 				{
-					// We only want keyboard keys on this settings screen, so we will filter down by mappings
-					// that are set to keyboard keys
-					FPlayerMappableKeyQueryOptions Options = {};
-					Options.KeyToMatch = EKeys::W;
-					Options.bMatchBasicKeyTypes = true;
-															
 					const FText& DesiredDisplayCategory = RowPair.Value.Mappings.begin()->GetDisplayCategory();
-					
+
 					if (UGameSettingCollection* Collection = GetOrCreateSettingCollection(DesiredDisplayCategory))
 					{
 						// Create the settings widget and initialize it, adding it to this config's section

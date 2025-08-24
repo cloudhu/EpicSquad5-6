@@ -6,14 +6,11 @@
 #include "CommonSessionSubsystem.h"
 #include "CommonUserSubsystem.h"
 #include "ControlFlowManager.h"
-#include "GameUIManagerSubsystem.h"
-
 #include "Kismet/GameplayStatics.h"
 #include "NativeGameplayTags.h"
 #include "PrimaryGameLayout.h"
 
-#include "Common/DebugHelper.h"
-
+#include "UI/Subsystem/LyraUIManagerSubsystem.h"
 #include "Widgets/CommonActivatableWidgetContainer.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(LyraFrontendStateComponent)
@@ -41,15 +38,12 @@ void ULyraFrontendStateComponent::BeginPlay()
 	// // This delegate is on a component with the same lifetime as this one, so no need to unhook it in 
 	// ExperienceComponent->CallOrRegister_OnExperienceLoaded_HighPriority(FOnLyraExperienceLoaded::FDelegate::CreateUObject(this, &ThisClass::OnExperienceLoaded));
 	const AGameStateBase* GameState = GetGameStateChecked<AGameStateBase>();
-	
-	if (UGameUIManagerSubsystem* UIManager = GameState->GetGameInstance()->GetSubsystem<UGameUIManagerSubsystem>())
+
+	if (ULyraUIManagerSubsystem* UIManager = GameState->GetGameInstance()->GetSubsystem<ULyraUIManagerSubsystem>())
 	{
 		UIManager->CallOrRegister_OnLayoutLoaded_HighPriority(FOnLayoutLoaded::FDelegate::CreateUObject(this, &ThisClass::OnFrontendLayoutLoaded));
-		// FOnLayoutLoaded::FDelegate Delegate;
-		// Delegate.BindUObject(this, &ThisClass::OnFrontendLayoutLoaded);
-		// UIManager->CallOrRegister_OnLayoutLoaded_HighPriority(MoveTemp(Delegate));
 	}
-
+	//OnFrontendLayoutLoaded(true);
 }
 
 void ULyraFrontendStateComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -90,6 +84,7 @@ void ULyraFrontendStateComponent::OnFrontendLayoutLoaded(const bool bSuccess)
 	FrontEndFlow = Flow.AsShared();
 }
 
+//不要采用优化提示的const 或 static，会导致编译不过 
 void ULyraFrontendStateComponent::FlowStep_WaitForUserInitialization(FControlFlowNodeRef SubFlow)
 {
 	// If this was a hard disconnect, explicitly destroy all user and session state
@@ -97,21 +92,24 @@ void ULyraFrontendStateComponent::FlowStep_WaitForUserInitialization(FControlFlo
 	bool bWasHardDisconnect = false;
 	const AGameModeBase* GameMode = GetWorld()->GetAuthGameMode<AGameModeBase>();
 	const UGameInstance* GameInstance = UGameplayStatics::GetGameInstance(this);
-
+	//EpicDebug::Print(TEXT("FlowStep_WaitForUserInitialization"));
 	if (ensure(GameMode) && UGameplayStatics::HasOption(GameMode->OptionsString, TEXT("closed")))
 	{
+		//EpicDebug::Print(TEXT("bWasHardDisconnect true"));
 		bWasHardDisconnect = true;
 	}
 
 	// Only reset users on hard disconnect
 	if (UCommonUserSubsystem* UserSubsystem = GameInstance->GetSubsystem<UCommonUserSubsystem>(); ensure(UserSubsystem) && bWasHardDisconnect)
 	{
+		//EpicDebug::Print(TEXT("ResetUserState"));
 		UserSubsystem->ResetUserState();
 	}
 
 	// Always reset sessions
 	if (UCommonSessionSubsystem* SessionSubsystem = GameInstance->GetSubsystem<UCommonSessionSubsystem>(); ensure(SessionSubsystem))
 	{
+		//EpicDebug::Print(TEXT("SessionSubsystem->CleanUpSessions()"));
 		SessionSubsystem->CleanUpSessions();
 	}
 
@@ -122,13 +120,14 @@ void ULyraFrontendStateComponent::FlowStep_TryShowPressStartScreen(FControlFlowN
 {
 	const UGameInstance* GameInstance = UGameplayStatics::GetGameInstance(this);
 	UCommonUserSubsystem* UserSubsystem = GameInstance->GetSubsystem<UCommonUserSubsystem>();
-
+	//EpicDebug::Print(TEXT("Try To Show Press Start Screen"));
 	// Check to see if the first player is already logged in, if they are, we can skip the press start screen.
 	if (const UCommonUserInfo* FirstUser = UserSubsystem->GetUserInfoForLocalPlayerIndex(0))
 	{
 		if (FirstUser->InitializationState == ECommonUserInitializationState::LoggedInLocalOnly ||
 			FirstUser->InitializationState == ECommonUserInitializationState::LoggedInOnline)
 		{
+			//EpicDebug::Print(TEXT("the first player is already logged in,skip the press start screen."));
 			SubFlow->ContinueFlow();
 			return;
 		}
@@ -143,33 +142,38 @@ void ULyraFrontendStateComponent::FlowStep_TryShowPressStartScreen(FControlFlowN
 		InProgressPressStartScreen = SubFlow;
 		UserSubsystem->OnUserInitializeComplete.AddDynamic(this, &ULyraFrontendStateComponent::OnUserInitialized);
 		UserSubsystem->TryToInitializeForLocalPlay(0, FInputDeviceId(), false);
-
+		//EpicDebug::Print(TEXT("Start the auto login process,skip the press start screen."));
 		return;
 	}
 
 	// Add the Press Start screen, move to the next flow when it deactivates.
-	if (UPrimaryGameLayout* RootLayout = UPrimaryGameLayout::GetPrimaryGameLayoutForPrimaryPlayer(this))
+	const AGameStateBase* GameState = GetGameStateChecked<AGameStateBase>();
+
+	if (const ULyraUIManagerSubsystem* UIManager = GameState->GetGameInstance()->GetSubsystem<ULyraUIManagerSubsystem>())
 	{
-		constexpr bool bSuspendInputUntilComplete = true;
-		RootLayout->PushWidgetToLayerStackAsync<UCommonActivatableWidget>(
-			FrontendTags::TAG_UI_LAYER_MENU, bSuspendInputUntilComplete, PressStartScreenClass,
-			[this, SubFlow](EAsyncWidgetLayerState State, UCommonActivatableWidget* Screen)
-			{
-				switch (State)
+		if (UPrimaryGameLayout* RootLayout = UIManager->GetCreatedPrimaryLayout())
+		{
+			constexpr bool bSuspendInputUntilComplete = true;
+			RootLayout->PushWidgetToLayerStackAsync<UCommonActivatableWidget>(
+				FrontendTags::TAG_UI_LAYER_MENU, bSuspendInputUntilComplete, PressStartScreenClass,
+				[this, SubFlow](const EAsyncWidgetLayerState State, const UCommonActivatableWidget* Screen)
 				{
-				case EAsyncWidgetLayerState::AfterPush:
-					bShouldShowLoadingScreen = false;
-					Screen->OnDeactivated().AddWeakLambda(this, [this, SubFlow]()
+					switch (State)
 					{
+					case EAsyncWidgetLayerState::AfterPush:
+						bShouldShowLoadingScreen = false;
+						Screen->OnDeactivated().AddWeakLambda(this, [this, SubFlow]()
+						{
+							SubFlow->ContinueFlow();
+						});
+						break;
+					case EAsyncWidgetLayerState::Canceled:
+						bShouldShowLoadingScreen = false;
 						SubFlow->ContinueFlow();
-					});
-					break;
-				case EAsyncWidgetLayerState::Canceled:
-					bShouldShowLoadingScreen = false;
-					SubFlow->ContinueFlow();
-				default: ;
-				}
-			});
+					default: ;
+					}
+				});
+		}
 	}
 }
 
@@ -199,11 +203,10 @@ void ULyraFrontendStateComponent::OnUserInitialized(const UCommonUserInfo* UserI
 
 void ULyraFrontendStateComponent::FlowStep_TryJoinRequestedSession(FControlFlowNodeRef SubFlow)
 {
-	
 	if (UCommonGameInstance* GameInstance = Cast<UCommonGameInstance>(UGameplayStatics::GetGameInstance(this)); GameInstance->GetRequestedSession() != nullptr
 		&& GameInstance->CanJoinRequestedSession())
 	{
-		EpicDebug::Print("FlowStep_TryJoinRequestedSession");
+		//EpicDebug::Print("FlowStep_TryJoinRequestedSession");
 		if (UCommonSessionSubsystem* SessionSubsystem = GameInstance->GetSubsystem<UCommonSessionSubsystem>(); ensure(SessionSubsystem))
 		{
 			// Bind to session join completion to continue or cancel the flow
@@ -217,7 +220,7 @@ void ULyraFrontendStateComponent::FlowStep_TryJoinRequestedSession(FControlFlowN
 
 					if (Result.bWasSuccessful)
 					{
-						EpicDebug::Print("No longer transitioning to the main menu!");
+						//EpicDebug::Print("No longer transitioning to the main menu!");
 						// No longer transitioning to the main menu
 						SubFlow->CancelFlow();
 					}
@@ -237,28 +240,31 @@ void ULyraFrontendStateComponent::FlowStep_TryJoinRequestedSession(FControlFlowN
 
 void ULyraFrontendStateComponent::FlowStep_TryShowMainScreen(FControlFlowNodeRef SubFlow)
 {
-	
-	if (UPrimaryGameLayout* RootLayout = UPrimaryGameLayout::GetPrimaryGameLayoutForPrimaryPlayer(this))
+	const AGameStateBase* GameState = GetGameStateChecked<AGameStateBase>();
+
+	if (const ULyraUIManagerSubsystem* UIManager = GameState->GetGameInstance()->GetSubsystem<ULyraUIManagerSubsystem>())
 	{
-		const bool bSuspendInputUntilComplete = true;
-		EpicDebug::Print("FlowStep_TryShowMainScreen");
-		RootLayout->PushWidgetToLayerStackAsync<UCommonActivatableWidget>(
-			FrontendTags::TAG_UI_LAYER_MENU, bSuspendInputUntilComplete, MainScreenClass,
-			[this, SubFlow](const EAsyncWidgetLayerState State, UCommonActivatableWidget* Screen)
-			{
-				switch (State)
+		if (UPrimaryGameLayout* RootLayout = UIManager->GetCreatedPrimaryLayout())
+		{
+			//EpicDebug::Print("FlowStep_TryShowMainScreen");
+			RootLayout->PushWidgetToLayerStackAsync<UCommonActivatableWidget>(
+				FrontendTags::TAG_UI_LAYER_MENU, true, MainScreenClass,
+				[this, SubFlow](const EAsyncWidgetLayerState State, UCommonActivatableWidget* Screen)
 				{
-				case EAsyncWidgetLayerState::AfterPush:
-					EpicDebug::Print("FlowStep_TryShowMainScreen AfterPush");
-					bShouldShowLoadingScreen = false;
-					SubFlow->ContinueFlow();
-					return;
-				case EAsyncWidgetLayerState::Canceled:
-					EpicDebug::Print("FlowStep_TryShowMainScreen Canceled");
-					bShouldShowLoadingScreen = false;
-					SubFlow->ContinueFlow();
-				default: ;
-				}
-			});
+					switch (State)
+					{
+					case EAsyncWidgetLayerState::AfterPush:
+						//EpicDebug::Print("FlowStep_TryShowMainScreen AfterPush");
+						bShouldShowLoadingScreen = false;
+						SubFlow->ContinueFlow();
+						return;
+					case EAsyncWidgetLayerState::Canceled:
+						//EpicDebug::Print("FlowStep_TryShowMainScreen Canceled");
+						bShouldShowLoadingScreen = false;
+						SubFlow->ContinueFlow();
+					default: ;
+					}
+				});
+		}
 	}
 }
