@@ -1,7 +1,7 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "CommonInputBaseTypes.h"
-#include "DataSource/GameSettingDataSource.h"
+#include "EnhancedInputSubsystems.h"
 #include "GameSettingCollection.h"
 #include "GameSettingValueDiscreteDynamic.h"
 #include "GameSettingValueScalarDynamic.h"
@@ -9,12 +9,14 @@
 #include "LyraSettingsLocal.h"
 #include "LyraSettingsShared.h"
 #include "NativeGameplayTags.h"
+#include "CustomSettings/LyraSettingKeyboardInput.h"
+#include "Input/LyraPlayerMappableKeyProfile.h"
 #include "Player/LyraLocalPlayer.h"
 
 #define LOCTEXT_NAMESPACE "Lyra"
 
-UE_DEFINE_GAMEPLAY_TAG_STATIC(TAG_Platform_Trait_Input_SupportsGamepad, "Platform.Trait.Input.SupportsGamepad");
-UE_DEFINE_GAMEPLAY_TAG_STATIC(TAG_Platform_Trait_Input_SupportsTriggerHaptics, "Platform.Trait.Input.SupportsTriggerHaptics");
+// UE_DEFINE_GAMEPLAY_TAG_STATIC(TAG_Platform_Trait_Input_SupportsGamepad, "Platform.Trait.Input.SupportsGamepad");
+// UE_DEFINE_GAMEPLAY_TAG_STATIC(TAG_Platform_Trait_Input_SupportsTriggerHaptics, "Platform.Trait.Input.SupportsTriggerHaptics");
 
 UGameSettingCollection* ULyraGameSettingRegistry::InitializeGamepadSettings(ULyraLocalPlayer* InLocalPlayer)
 {
@@ -46,8 +48,7 @@ UGameSettingCollection* ULyraGameSettingRegistry::InitializeGamepadSettings(ULyr
 				{
 					if (TSubclassOf<UCommonInputBaseControllerData> ControllerDataClass = ControllerDataPtr.LoadSynchronous())
 					{
-						const UCommonInputBaseControllerData* ControllerData = ControllerDataClass.GetDefaultObject();
-						if (ControllerData->InputType == ECommonInputType::Gamepad)
+						if (const UCommonInputBaseControllerData* ControllerData = ControllerDataClass.GetDefaultObject(); ControllerData->InputType == ECommonInputType::Gamepad)
 						{
 							Setting->AddDynamicOption(ControllerData->GamepadName.ToString(), ControllerData->GamepadDisplayName);
 						}
@@ -112,15 +113,7 @@ UGameSettingCollection* ULyraGameSettingRegistry::InitializeGamepadSettings(ULyr
 		}
 		//----------------------------------------------------------------------------------
 	}
-
-	////////////////////////////////////////////////////////////////////////////////////
-	{
-		UGameSettingCollection* GamepadBinding = NewObject<UGameSettingCollection>();
-		GamepadBinding->SetDevName(TEXT("GamepadBindingCollection"));
-		GamepadBinding->SetDisplayName(LOCTEXT("GamepadBindingCollection_Name", "Controls"));
-		Screen->AddSetting(GamepadBinding);
-	}
-
+	
 	// Basic - Look Sensitivity
 	////////////////////////////////////////////////////////////////////////////////////
 	{
@@ -225,6 +218,93 @@ UGameSettingCollection* ULyraGameSettingRegistry::InitializeGamepadSettings(ULyr
 		//----------------------------------------------------------------------------------
 	}
 
+	////////////////////////////////////////////////////////////////////////////////////
+	{
+		UGameSettingCollection* GamepadBinding = NewObject<UGameSettingCollection>();
+		GamepadBinding->SetDevName(TEXT("GamepadBindingCollection"));
+		GamepadBinding->SetDisplayName(LOCTEXT("GamepadBindingCollection_Name", "Controls"));
+		Screen->AddSetting(GamepadBinding);
+
+		const UEnhancedInputLocalPlayerSubsystem* EiSubsystem = InLocalPlayer->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
+		UEnhancedInputUserSettings* UserSettings = EiSubsystem->GetUserSettings();
+
+		// If you want to just get one profile pair, then you can do UserSettings->GetCurrentProfile
+
+		// A map of key bindings mapped to their display category
+		TMap<FString, UGameSettingCollection*> CategoryToSettingCollection;
+
+		// Returns an existing setting collection for the display category if there is one.
+		// If there isn't one, then it will create a new one and initialize it
+		auto GetOrCreateSettingCollection = [&CategoryToSettingCollection, &GamepadBinding](FText DisplayCategory) -> UGameSettingCollection*
+		{
+			//static const FString DefaultDevName = TEXT("Default_KBM");
+			static const FText DefaultDevDisplayName = NSLOCTEXT("LyraInputSettings", "Gamepad", "Gamepad");
+
+			if (DisplayCategory.IsEmpty())
+			{
+				DisplayCategory = DefaultDevDisplayName;
+			}
+			else
+			{
+				DisplayCategory = FText::Format(FText::FromString("{0}_{1}"), DefaultDevDisplayName, DisplayCategory);
+			}
+
+			const FString DisplayCatString = DisplayCategory.ToString();
+			//EpicDebug::Print(TEXT("DisplayCatString: ") + DisplayCatString);
+			if (UGameSettingCollection** ExistingCategory = CategoryToSettingCollection.Find(DisplayCatString))
+			{
+				return *ExistingCategory;
+			}
+
+			UGameSettingCollection* ConfigSettingCollection = NewObject<UGameSettingCollection>();
+			ConfigSettingCollection->SetDevName(FName(DisplayCatString));
+			ConfigSettingCollection->SetDisplayName(DisplayCategory);
+			
+			CategoryToSettingCollection.Add(DisplayCatString, ConfigSettingCollection);
+			GamepadBinding->AddSetting(ConfigSettingCollection);
+			return ConfigSettingCollection;
+		};
+
+		static TSet<FName> CreatedMappingNames;
+		CreatedMappingNames.Reset();
+
+		// We only want keyboard keys on this settings screen, so we will filter down by mappings
+		// that are set to keyboard keys
+		FPlayerMappableKeyQueryOptions Options = {};
+		Options.KeyToMatch = EKeys::Gamepad_FaceButton_Bottom;
+		Options.bMatchBasicKeyTypes = true;
+		
+		for (const TPair<FString, TObjectPtr<UEnhancedPlayerMappableKeyProfile>>& ProfilePair : UserSettings->GetAllAvailableKeyProfiles())
+		{
+			//const FString& ProfileName = ProfilePair.Key;
+			//EpicDebug::Print(TEXT("ProfileName :") + ProfileName);
+			for (const TObjectPtr<UEnhancedPlayerMappableKeyProfile>& Profile = ProfilePair.Value; const TPair<FName, FKeyMappingRow>& RowPair : Profile->
+			     GetPlayerMappingRows())
+			{
+				// Create a setting row for anything with valid mappings and that we haven't created yet
+				//EpicDebug::Print(RowPair.Value.HasAnyMappings() ? " RowPair.Value.HasAnyMappings : True" : "RowPair.Value.HasAnyMappings : false");
+				if (RowPair.Value.HasAnyMappings() /* && !CreatedMappingNames.Contains(RowPair.Key)*/)
+				{
+					const FText& DesiredDisplayCategory = RowPair.Value.Mappings.begin()->GetDisplayCategory();
+
+					if (UGameSettingCollection* Collection = GetOrCreateSettingCollection(DesiredDisplayCategory))
+					{
+						// Create the settings widget and initialize it, adding it to this config's section
+						ULyraSettingKeyboardInput* InputBinding = NewObject<ULyraSettingKeyboardInput>();
+
+						InputBinding->InitializeInputData(UserSettings,Profile, RowPair.Value, Options);
+						
+						Collection->AddSetting(InputBinding);
+						CreatedMappingNames.Add(RowPair.Key);
+					}
+					else
+					{
+						ensure(false);
+					}
+				}
+			}
+		}
+	}
 	return Screen;
 }
 

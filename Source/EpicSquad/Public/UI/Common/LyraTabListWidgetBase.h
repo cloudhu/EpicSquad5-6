@@ -73,7 +73,7 @@ public:
 	/** Helper method to get at all the preregistered tab infos */
 	const TArray<FLyraTabDescriptor>& GetAllPreregisteredTabInfos() { return PreregisteredTabInfoArray; }
 
-	// Toggles whether or not a specified tab is hidden, can only be called before the switcher is associated
+	// Toggles whether a specified tab is hidden, can only be called before the switcher is associated
 	UFUNCTION(BlueprintCallable, Category = "Tab List")
 	void SetTabHiddenState(FName TabNameId, bool bHidden);
 

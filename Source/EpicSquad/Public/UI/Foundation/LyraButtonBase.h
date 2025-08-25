@@ -6,6 +6,7 @@
 
 #include "LyraButtonBase.generated.h"
 
+class UCommonLazyImage;
 class UObject;
 struct FFrame;
 
@@ -17,7 +18,9 @@ class EPICSQUAD_API ULyraButtonBase : public UCommonButtonBase
 public:
 	UFUNCTION(BlueprintCallable)
 	void SetButtonText(const FText& InText);
-	
+
+	UFUNCTION(BlueprintCallable)
+	void SetButtonDisplayImage(const FSlateBrush& InBrush);
 protected:
 	// UUserWidget interface
 	virtual void NativePreConstruct() override;
@@ -35,12 +38,17 @@ protected:
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void UpdateButtonStyle();
-	
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void UpdateButtonIconStyle();
 private:
 	UPROPERTY(EditAnywhere, Category="Button", meta=(InlineEditConditionToggle))
 	uint8 bOverride_ButtonText : 1;
 	
 	UPROPERTY(EditAnywhere, Category="Button", meta=( editcondition="bOverride_ButtonText" ))
 	FText ButtonText;
+
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional,AllowPrivateAccess = "true"))
+	UCommonLazyImage* CommonLazyImage_Icon;
 	
 };

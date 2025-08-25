@@ -33,18 +33,25 @@ protected:
 
 	void HandlePrimaryKeyClicked();
 	void HandleSecondaryKeyClicked();
-	void HandleClearClicked();
-	void HandleResetToDefaultClicked();
+	void HandleThirdKeyClicked();
+	void HandleFourthKeyClicked();
+	void HandleClearClicked() const;
+	void HandleResetToDefaultClicked() const;
 
 	void HandlePrimaryKeySelected(FKey InKey, UGameSettingPressAnyKey* PressAnyKeyPanel);
 	void HandleSecondaryKeySelected(FKey InKey, UGameSettingPressAnyKey* PressAnyKeyPanel);
+	void HandleThirdKeySelected(FKey InKey, UGameSettingPressAnyKey* PressAnyKeyPanel);
+	void HandleFourthKeySelected(FKey InKey, UGameSettingPressAnyKey* PressAnyKeyPanel);
 	void HandlePrimaryDuplicateKeySelected(FKey InKey, UKeyAlreadyBoundWarning* DuplicateKeyPressAnyKeyPanel) const;
 	void HandleSecondaryDuplicateKeySelected(FKey InKey, UKeyAlreadyBoundWarning* DuplicateKeyPressAnyKeyPanel) const;
-	void ChangeBinding(int32 BindSlot, FKey InKey);
-	void HandleKeySelectionCanceled(UGameSettingPressAnyKey* PressAnyKeyPanel);
-	void HandleKeySelectionCanceled(UKeyAlreadyBoundWarning* PressAnyKeyPanel);
+	void HandleThirdDuplicateKeySelected(FKey InKey, UKeyAlreadyBoundWarning* DuplicateKeyPressAnyKeyPanel) const;
+	void HandleFourthDuplicateKeySelected(FKey InKey, UKeyAlreadyBoundWarning* DuplicateKeyPressAnyKeyPanel) const;
+	void ChangeBinding(int32 InKeyBindSlot, const FKey& InKey);
+	
+	void HandleKeySelectionCanceled(UGameSettingPressAnyKey* PressAnyKeyPanel) const;
+	void HandleKeySelectionCanceled(UKeyAlreadyBoundWarning* PressAnyKeyPanel) const;
 
-	void Refresh();
+	void Refresh() const;
 
 private:
 	UPROPERTY(Transient)
@@ -68,8 +75,16 @@ private:	// Bound Widgets
 	TObjectPtr<ULyraButtonBase> Button_SecondaryKey;
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget, BlueprintProtected = true, AllowPrivateAccess = true))
+	TObjectPtr<ULyraButtonBase> Button_ThirdKey;
+
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget, BlueprintProtected = true, AllowPrivateAccess = true))
+	TObjectPtr<ULyraButtonBase> Button_FourthKey;
+	
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget, BlueprintProtected = true, AllowPrivateAccess = true))
 	TObjectPtr<ULyraButtonBase> Button_Clear;
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget, BlueprintProtected = true, AllowPrivateAccess = true))
 	TObjectPtr<ULyraButtonBase> Button_ResetToDefault;
+
+	TArray<TObjectPtr<ULyraButtonBase>> Buttons;
 };

@@ -2,6 +2,7 @@
 
 #include "LyraButtonBase.h"
 #include "CommonActionWidget.h"
+#include "CommonLazyImage.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(LyraButtonBase)
 
@@ -28,13 +29,22 @@ void ULyraButtonBase::SetButtonText(const FText& InText)
 	RefreshButtonText();
 }
 
+void ULyraButtonBase::SetButtonDisplayImage(const FSlateBrush& InBrush)
+{
+	if (CommonLazyImage_Icon)
+	{
+		CommonLazyImage_Icon->SetBrush(InBrush);
+		UpdateButtonIconStyle();
+	}
+}
+
 void ULyraButtonBase::RefreshButtonText()
 {
 	if (bOverride_ButtonText || ButtonText.IsEmpty())
 	{
 		if (InputActionWidget)
 		{
-			const FText ActionDisplayText = InputActionWidget->GetDisplayText();	
+			const FText ActionDisplayText = InputActionWidget->GetDisplayText();
 			if (!ActionDisplayText.IsEmpty())
 			{
 				UpdateButtonText(ActionDisplayText);
@@ -42,8 +52,8 @@ void ULyraButtonBase::RefreshButtonText()
 			}
 		}
 	}
-	
-	UpdateButtonText(ButtonText);	
+
+	UpdateButtonText(ButtonText);
 }
 
 void ULyraButtonBase::OnInputMethodChanged(ECommonInputType CurrentInputType)

@@ -9,12 +9,7 @@
 #include "GameSettingValueScalarDynamic.h"
 #include "LyraGameSettingRegistry.h"
 #include "LyraSettingsShared.h"
-
-#include "Common/DebugHelper.h"
-
 #include "Player/LyraLocalPlayer.h"
-
-class ULocalPlayer;
 
 #define LOCTEXT_NAMESPACE "Lyra"
 
@@ -32,7 +27,7 @@ UGameSettingCollection* ULyraGameSettingRegistry::InitializeMouseAndKeyboardSett
 				PlatformInput->SupportsInputType(ECommonInputType::MouseAndKeyboard))
 			{
 				InOutEditState.Kill(TEXT("Platform does not support mouse and keyboard"));
-				EpicDebug::Print(TEXT("Platform does not support mouse and keyboard"));
+				//EpicDebug::Print(TEXT("Platform does not support mouse and keyboard"));
 			}
 		});
 
@@ -133,7 +128,7 @@ UGameSettingCollection* ULyraGameSettingRegistry::InitializeMouseAndKeyboardSett
 		}
 		//----------------------------------------------------------------------------------
 	}
-	
+
 	// Bindings for Mouse & Keyboard - Automatically Generated
 	////////////////////////////////////////////////////////////////////////////////////
 	{
@@ -143,7 +138,7 @@ UGameSettingCollection* ULyraGameSettingRegistry::InitializeMouseAndKeyboardSett
 		Screen->AddSetting(KeyBinding);
 
 		const UEnhancedInputLocalPlayerSubsystem* EiSubsystem = InLocalPlayer->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
-		const UEnhancedInputUserSettings* UserSettings = EiSubsystem->GetUserSettings();
+		UEnhancedInputUserSettings* UserSettings = EiSubsystem->GetUserSettings();
 
 		// If you want to just get one profile pair, then you can do UserSettings->GetCurrentProfile
 
@@ -152,7 +147,7 @@ UGameSettingCollection* ULyraGameSettingRegistry::InitializeMouseAndKeyboardSett
 
 		// Returns an existing setting collection for the display category if there is one.
 		// If there isn't one, then it will create a new one and initialize it
-		auto GetOrCreateSettingCollection = [&CategoryToSettingCollection, &Screen](FText DisplayCategory) -> UGameSettingCollection*
+		auto GetOrCreateSettingCollection = [&CategoryToSettingCollection, &KeyBinding](FText DisplayCategory) -> UGameSettingCollection*
 		{
 			//static const FString DefaultDevName = TEXT("Default_KBM");
 			static const FText DefaultDevDisplayName = NSLOCTEXT("LyraInputSettings", "LyraInputDefaults", "Default Experiences");
@@ -163,7 +158,7 @@ UGameSettingCollection* ULyraGameSettingRegistry::InitializeMouseAndKeyboardSett
 			}
 
 			const FString DisplayCatString = DisplayCategory.ToString();
-			EpicDebug::Print(TEXT("DisplayCatString: ") + DisplayCatString);
+			//EpicDebug::Print(TEXT("DisplayCatString: ") + DisplayCatString);
 			if (UGameSettingCollection** ExistingCategory = CategoryToSettingCollection.Find(DisplayCatString))
 			{
 				return *ExistingCategory;
@@ -172,9 +167,9 @@ UGameSettingCollection* ULyraGameSettingRegistry::InitializeMouseAndKeyboardSett
 			UGameSettingCollection* ConfigSettingCollection = NewObject<UGameSettingCollection>();
 			ConfigSettingCollection->SetDevName(FName(DisplayCatString));
 			ConfigSettingCollection->SetDisplayName(DisplayCategory);
-			Screen->AddSetting(ConfigSettingCollection);
-			CategoryToSettingCollection.Add(DisplayCatString, ConfigSettingCollection);
 
+			CategoryToSettingCollection.Add(DisplayCatString, ConfigSettingCollection);
+			KeyBinding->AddSetting(ConfigSettingCollection);
 			return ConfigSettingCollection;
 		};
 
@@ -186,16 +181,16 @@ UGameSettingCollection* ULyraGameSettingRegistry::InitializeMouseAndKeyboardSett
 		FPlayerMappableKeyQueryOptions Options = {};
 		Options.KeyToMatch = EKeys::W;
 		Options.bMatchBasicKeyTypes = true;
-		
+
 		for (const TPair<FString, TObjectPtr<UEnhancedPlayerMappableKeyProfile>>& ProfilePair : UserSettings->GetAllAvailableKeyProfiles())
 		{
-			const FString& ProfileName = ProfilePair.Key;
-			EpicDebug::Print(TEXT("ProfileName :") + ProfileName);
+			//const FString& ProfileName = ProfilePair.Key;
+			//EpicDebug::Print(TEXT("ProfileName :") + ProfileName);
 			for (const TObjectPtr<UEnhancedPlayerMappableKeyProfile>& Profile = ProfilePair.Value; const TPair<FName, FKeyMappingRow>& RowPair : Profile->
 			     GetPlayerMappingRows())
 			{
 				// Create a setting row for anything with valid mappings and that we haven't created yet
-				EpicDebug::Print(RowPair.Value.HasAnyMappings() ? " RowPair.Value.HasAnyMappings : True" : "RowPair.Value.HasAnyMappings : false");
+				//EpicDebug::Print(RowPair.Value.HasAnyMappings() ? " RowPair.Value.HasAnyMappings : True" : "RowPair.Value.HasAnyMappings : false");
 				if (RowPair.Value.HasAnyMappings() /* && !CreatedMappingNames.Contains(RowPair.Key)*/)
 				{
 					const FText& DesiredDisplayCategory = RowPair.Value.Mappings.begin()->GetDisplayCategory();
@@ -205,7 +200,8 @@ UGameSettingCollection* ULyraGameSettingRegistry::InitializeMouseAndKeyboardSett
 						// Create the settings widget and initialize it, adding it to this config's section
 						ULyraSettingKeyboardInput* InputBinding = NewObject<ULyraSettingKeyboardInput>();
 
-						InputBinding->InitializeInputData(Profile, RowPair.Value, Options);
+						InputBinding->InitializeInputData(UserSettings, Profile, RowPair.Value, Options);
+
 						InputBinding->AddEditCondition(WhenPlatformSupportsMouseAndKeyboard);
 
 						Collection->AddSetting(InputBinding);

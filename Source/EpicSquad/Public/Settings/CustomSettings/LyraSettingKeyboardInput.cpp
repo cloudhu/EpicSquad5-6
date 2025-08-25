@@ -2,19 +2,13 @@
 
 #include "LyraSettingKeyboardInput.h"
 
+#include "CommonInputSubsystem.h"
 #include "EnhancedInputSubsystems.h"
-#include "../LyraSettingsLocal.h"
 #include "Player/LyraLocalPlayer.h"
 #include "PlayerMappableInputConfig.h"
-#include "EnhancedInputSubsystems.h"
-
-#include "Common/DebugHelper.h"
-
 #include "UserSettings/EnhancedInputUserSettings.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(LyraSettingKeyboardInput)
-
-class ULocalPlayer;
 
 #define LOCTEXT_NAMESPACE "LyraSettings"
 
@@ -24,7 +18,8 @@ namespace Lyra::ErrorMessages
 }
 
 
-ULyraSettingKeyboardInput::ULyraSettingKeyboardInput()
+ULyraSettingKeyboardInput::ULyraSettingKeyboardInput(): CachedDesiredInputKeyType(ECommonInputType::MouseAndKeyboard), CachedOwningInputUserSettings(nullptr),
+                                                        CachedOwningKeyProfile(nullptr)
 {
 	bReportAnalytics = false;
 }
@@ -55,6 +50,75 @@ FText ULyraSettingKeyboardInput::GetSettingDisplayCategory() const
 	return Lyra::ErrorMessages::UnknownMappingName;
 }
 
+const FKey& ULyraSettingKeyboardInput::GetCurrentKey(const EPlayerMappableKeySlot InSlot) const
+{
+	if (InitialKeyMappings.Contains(InSlot))
+	{
+		return *InitialKeyMappings.Find(InSlot);
+	}
+	FMapPlayerKeyArgs KeyArgs;
+	KeyArgs.MappingName = ActionMappingName;
+	KeyArgs.Slot = InSlot;
+	return CachedOwningKeyProfile->FindKeyMapping(KeyArgs)->GetCurrentKey();
+	
+	// if (CachedOwningKeyProfile)
+	// {
+	// 	FPlayerMappableKeyQueryOptions QueryOptionsForSlot = QueryOptions;
+	// 	QueryOptionsForSlot.SlotToMatch = InSlot;
+	//
+	// 	// if (const FKeyMappingRow* Row = FindKeyMappingRow())
+	// 	// {
+	// 	// 	for (const FPlayerKeyMapping& Mapping : Row->Mappings)
+	// 	// 	{
+	// 	// 		if (CachedOwningKeyProfile->DoesMappingPassQueryOptions(Mapping, QueryOptionsForSlot))
+	// 	// 		{
+	// 	// 			return Mapping.GetCurrentKey();
+	// 	// 		}
+	// 	// 	}
+	// 	// }
+	//
+	// }
+	// return EKeys::Invalid;
+}
+
+bool ULyraSettingKeyboardInput::GetIconFromKey(FSlateBrush& OutBrush, const FKey& InKey) const
+{
+	const UCommonInputSubsystem* CommonInputSubsystem = UCommonInputSubsystem::Get(LocalPlayer);
+
+	checkf(CommonInputSubsystem, TEXT("ULyraSettingKeyboardInput::GetIconFromKey Can not Get UCommonInputSubsystem"));
+
+	const bool bHasFoundBrush = UCommonInputPlatformSettings::Get()->TryGetInputBrush(
+		OutBrush,
+		InKey,
+		CachedDesiredInputKeyType,
+		CommonInputSubsystem->GetCurrentGamepadName()
+	);
+
+	return bHasFoundBrush;
+}
+
+FText ULyraSettingKeyboardInput::GetKeyTextFromKey(const FKey& InKey)
+{
+	return InKey.GetDisplayName();
+}
+
+bool ULyraSettingKeyboardInput::GetIconFromCurrentKey(FSlateBrush& OutBrush, const EPlayerMappableKeySlot InSlot) const
+{
+	const UCommonInputSubsystem* CommonInputSubsystem = UCommonInputSubsystem::Get(LocalPlayer);
+
+	check(CommonInputSubsystem);
+
+	const bool bHasFoundBrush = UCommonInputPlatformSettings::Get()->TryGetInputBrush(
+		OutBrush,
+		GetCurrentKey(InSlot),
+		CachedDesiredInputKeyType,
+		CommonInputSubsystem->GetCurrentGamepadName()
+	);
+
+
+	return bHasFoundBrush;
+}
+
 const FKeyMappingRow* ULyraSettingKeyboardInput::FindKeyMappingRow() const
 {
 	if (const UEnhancedPlayerMappableKeyProfile* Profile = FindMappableKeyProfile())
@@ -68,27 +132,12 @@ const FKeyMappingRow* ULyraSettingKeyboardInput::FindKeyMappingRow() const
 
 UEnhancedPlayerMappableKeyProfile* ULyraSettingKeyboardInput::FindMappableKeyProfile() const
 {
-	if (UEnhancedInputUserSettings* Settings = GetUserSettings())
-	{
-		return Settings->GetKeyProfileWithId(ProfileIdentifier);
-	}
-
-	ensure(false);
-	return nullptr;
+	return CachedOwningKeyProfile;
 }
 
 UEnhancedInputUserSettings* ULyraSettingKeyboardInput::GetUserSettings() const
 {
-	if (ULyraLocalPlayer* LyraLocalPlayer = Cast<ULyraLocalPlayer>(LocalPlayer))
-	{
-		// Map the key to the player key profile
-		if (UEnhancedInputLocalPlayerSubsystem* System = LyraLocalPlayer->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>())
-		{
-			return System->GetUserSettings();
-		}
-	}
-
-	return nullptr;
+	return CachedOwningInputUserSettings;
 }
 
 void ULyraSettingKeyboardInput::OnInitialized()
@@ -108,14 +157,16 @@ void ULyraSettingKeyboardInput::OnInitialized()
 	Super::OnInitialized();
 }
 
-void ULyraSettingKeyboardInput::InitializeInputData(const UEnhancedPlayerMappableKeyProfile* KeyProfile, const FKeyMappingRow& MappingData,
+void ULyraSettingKeyboardInput::InitializeInputData(UEnhancedInputUserSettings* InOwningInputUserSettings, UEnhancedPlayerMappableKeyProfile* KeyProfile,
+                                                    const FKeyMappingRow& MappingData,
                                                     const FPlayerMappableKeyQueryOptions& InQueryOptions)
 {
 	check(KeyProfile);
 
-	ProfileIdentifier = KeyProfile->GetProfileIdString();
+	//ProfileIdentifier = KeyProfile->GetProfileIdString();
 	QueryOptions = InQueryOptions;
-
+	CachedOwningInputUserSettings = InOwningInputUserSettings;
+	CachedOwningKeyProfile = KeyProfile;
 	for (const FPlayerKeyMapping& Mapping : MappingData.Mappings)
 	{
 		// Only add mappings that pass the query filters that have been provided upon creation
@@ -123,24 +174,29 @@ void ULyraSettingKeyboardInput::InitializeInputData(const UEnhancedPlayerMappabl
 		{
 			continue;
 		}
+		const int SlotID=static_cast<int>(Mapping.GetSlot());
 
+		UE_LOG(LogTemp, Log, TEXT("MappingDisplayName: %s -- SlotID: %d"),*Mapping.GetDisplayName().ToString(), SlotID);
 		ActionMappingName = Mapping.GetMappingName();
 		InitialKeyMappings.Add(Mapping.GetSlot(), Mapping.GetCurrentKey());
 
-		EpicDebug::Print(
-			TEXT(" Mapping ID: ") + Mapping.GetMappingName().ToString() +
-			TEXT(" Display Name: ") + Mapping.GetDisplayName().ToString() +
-			TEXT(" Bound Key: ") + Mapping.GetCurrentKey().GetDisplayName().ToString()
-		);
-		
 		if (const FText& MappingDisplayName = Mapping.GetDisplayName(); !MappingDisplayName.IsEmpty())
 		{
 			SetDisplayName(MappingDisplayName);
 		}
 	}
+	FString NameString = TEXT("KBM_Input_") + ActionMappingName.ToString();
+	if (InQueryOptions.KeyToMatch == EKeys::W)
+	{
+		CachedDesiredInputKeyType = ECommonInputType::MouseAndKeyboard;
+	}
+	else
+	{
+		CachedDesiredInputKeyType = ECommonInputType::Gamepad;
+		NameString = TEXT("GAMEPAD_Input_") + ActionMappingName.ToString();
+	}
 
-	const FString NameString = TEXT("KBM_Input_") + ActionMappingName.ToString();
-	EpicDebug::Print(TEXT("ULyraSettingKeyboardInput::InitializeInputData NameString :") + NameString);
+	//EpicDebug::Print(TEXT("ULyraSettingKeyboardInput::InitializeInputData NameString :") + NameString);
 	SetDevName(*NameString);
 }
 
@@ -164,6 +220,31 @@ FText ULyraSettingKeyboardInput::GetKeyTextFromSlot(const EPlayerMappableKeySlot
 	}
 
 	return EKeys::Invalid.GetDisplayName();
+}
+
+bool ULyraSettingKeyboardInput::IsSlotValid(const EPlayerMappableKeySlot InSlot) const
+{
+	if (InitialKeyMappings.Contains(InSlot))
+	{
+		return InitialKeyMappings.Find(InSlot)->IsValid();
+	}
+	if (CachedOwningKeyProfile)
+	{
+		FPlayerMappableKeyQueryOptions QueryOptionsForSlot = QueryOptions;
+		QueryOptionsForSlot.SlotToMatch = InSlot;
+
+		if (const FKeyMappingRow* Row = FindKeyMappingRow())
+		{
+			for (const FPlayerKeyMapping& Mapping : Row->Mappings)
+			{
+				if (CachedOwningKeyProfile->DoesMappingPassQueryOptions(Mapping, QueryOptionsForSlot))
+				{
+					return Mapping.IsValid();
+				}
+			}
+		}
+	}
+	return false;
 }
 
 void ULyraSettingKeyboardInput::ResetToDefault()
@@ -200,19 +281,19 @@ void ULyraSettingKeyboardInput::StoreInitial()
 
 void ULyraSettingKeyboardInput::RestoreToInitial()
 {
-	for (TPair<EPlayerMappableKeySlot, FKey> Pair : InitialKeyMappings)
+	for (TPair Pair : InitialKeyMappings)
 	{
-		ChangeBinding((int32)Pair.Key, Pair.Value);
+		ChangeBinding(static_cast<int32>(Pair.Key), Pair.Value);
 	}
 }
 
-bool ULyraSettingKeyboardInput::ChangeBinding(int32 InKeyBindSlot, FKey NewKey)
+bool ULyraSettingKeyboardInput::ChangeBinding(const int32 InKeyBindSlot, const FKey& NewKey)
 {
 	if (!NewKey.IsGamepadKey())
 	{
 		FMapPlayerKeyArgs Args = {};
 		Args.MappingName = ActionMappingName;
-		Args.Slot = (EPlayerMappableKeySlot)(static_cast<uint8>(InKeyBindSlot));
+		Args.Slot = static_cast<EPlayerMappableKeySlot>(static_cast<uint8>(InKeyBindSlot));
 		Args.NewKey = NewKey;
 		// If you want to, you can additionally specify this mapping to only be applied to a certain hardware device or key profile
 		//Args.ProfileId =
@@ -231,7 +312,7 @@ bool ULyraSettingKeyboardInput::ChangeBinding(int32 InKeyBindSlot, FKey NewKey)
 	return false;
 }
 
-void ULyraSettingKeyboardInput::GetAllMappedActionsFromKey(int32 InKeyBindSlot, FKey Key, TArray<FName>& OutActionNames) const
+void ULyraSettingKeyboardInput::GetAllMappedActionsFromKey(int32 InKeyBindSlot, const FKey& Key, TArray<FName>& OutActionNames) const
 {
 	if (const UEnhancedPlayerMappableKeyProfile* Profile = FindMappableKeyProfile())
 	{
@@ -245,7 +326,7 @@ bool ULyraSettingKeyboardInput::IsMappingCustomized() const
 
 	if (const UEnhancedPlayerMappableKeyProfile* Profile = FindMappableKeyProfile())
 	{
-		FPlayerMappableKeyQueryOptions QueryOptionsForSlot = QueryOptions;
+		const FPlayerMappableKeyQueryOptions QueryOptionsForSlot = QueryOptions;
 
 		if (const FKeyMappingRow* Row = FindKeyMappingRow())
 		{
