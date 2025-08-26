@@ -22,5 +22,9 @@ public:
 	TMap< FGameplayTag,TSoftClassPtr<UCommonActivatableWidget> > FrontendWidgetMap;
 
 	UPROPERTY(Config, EditAnywhere, Category = "UI Image Reference", meta = (ForceInlineRow, Categories = "UI.Image"))
-	TMap< FGameplayTag, TSoftObjectPtr<UTexture2D> > OptionsScreenSoftImageMap;
+	TMap< FGameplayTag, TSoftObjectPtr<UTexture2D> > ScreenSoftImageMap;
+
+	UPROPERTY(Config, EditAnywhere, Category = "UI Image Reference", meta = (ForceInlineRow, Categories = "UI.Image"))
+	TMap< FGameplayTag, TSoftObjectPtr<UMaterialInstance> > SoftMaterialInstanceMap;
+	
 };

@@ -55,6 +55,9 @@ public:
 
 	UFUNCTION(BlueprintPure, Category = "Frontend Function Library")
 	static TSoftObjectPtr<UTexture2D> GetSoftImageByTag(UPARAM(meta = (Categories = "UI.Image")) FGameplayTag InImageTag);
+
+	UFUNCTION(BlueprintPure, Category = "Frontend Function Library")
+	static TSoftObjectPtr<UMaterialInstance> GetSoftMaterialInstanceByTag(UPARAM(meta = (Categories = "UI.Image")) FGameplayTag InGameplayTag);
 private:
 	static TArray<FAssetData> GetAllBlueprints();
 	static UClass* FindBlueprintClass(const FString& TargetNameRaw, UClass* DesiredBaseClass);

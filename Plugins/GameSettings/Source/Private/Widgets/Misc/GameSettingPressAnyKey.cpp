@@ -64,7 +64,7 @@ public:
 	FSettingsPressAnyKeyInputPreProcessorKeySelected OnKeySelected;
 
 private:
-	void HandleKey(const FKey& Key)
+	void HandleKey(const FKey& Key) const
 	{
 		// Cancel this process if it's Escape, Touch, or a gamepad key.
 		if (Key == EKeys::LeftCommand || Key == EKeys::RightCommand)
@@ -85,6 +85,11 @@ private:
 UGameSettingPressAnyKey::UGameSettingPressAnyKey(const FObjectInitializer& Initializer)
 	: Super(Initializer)
 {
+}
+
+void UGameSettingPressAnyKey::SetKeyIndex(const int32 InKeyIndex)
+{
+	KeyIndex = InKeyIndex;
 }
 
 void UGameSettingPressAnyKey::NativeOnActivated()
@@ -115,7 +120,7 @@ void UGameSettingPressAnyKey::HandleKeySelected(FKey InKey)
 	{
 		bKeySelected = true;
 		Dismiss([this, InKey]() {
-			OnKeySelected.Broadcast(InKey);
+			OnKeySelected.Broadcast(InKey,KeyIndex);
 		});
 	}
 }

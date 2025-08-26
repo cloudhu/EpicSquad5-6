@@ -6,6 +6,7 @@
 
 #include "LyraSettingsListEntrySetting_KeyboardInput.generated.h"
 
+class UWidget_KeyRemapButtonBase;
 class UKeyAlreadyBoundWarning;
 
 class UGameSetting;
@@ -31,21 +32,15 @@ protected:
 	virtual void NativeOnEntryReleased() override;
 	virtual void OnSettingChanged() override;
 
-	void HandlePrimaryKeyClicked();
-	void HandleSecondaryKeyClicked();
-	void HandleThirdKeyClicked();
-	void HandleFourthKeyClicked();
+	void HandleRemapKeyClicked(int32 SlotID);
+
 	void HandleClearClicked() const;
 	void HandleResetToDefaultClicked() const;
 
-	void HandlePrimaryKeySelected(FKey InKey, UGameSettingPressAnyKey* PressAnyKeyPanel);
-	void HandleSecondaryKeySelected(FKey InKey, UGameSettingPressAnyKey* PressAnyKeyPanel);
-	void HandleThirdKeySelected(FKey InKey, UGameSettingPressAnyKey* PressAnyKeyPanel);
-	void HandleFourthKeySelected(FKey InKey, UGameSettingPressAnyKey* PressAnyKeyPanel);
-	void HandlePrimaryDuplicateKeySelected(FKey InKey, UKeyAlreadyBoundWarning* DuplicateKeyPressAnyKeyPanel) const;
-	void HandleSecondaryDuplicateKeySelected(FKey InKey, UKeyAlreadyBoundWarning* DuplicateKeyPressAnyKeyPanel) const;
-	void HandleThirdDuplicateKeySelected(FKey InKey, UKeyAlreadyBoundWarning* DuplicateKeyPressAnyKeyPanel) const;
-	void HandleFourthDuplicateKeySelected(FKey InKey, UKeyAlreadyBoundWarning* DuplicateKeyPressAnyKeyPanel) const;
+	void HandleRemapKeySelected(FKey InKey, int32 SlotID, UGameSettingPressAnyKey* PressAnyKeyPanel);
+
+	void HandleDuplicateKeySelected(FKey InKey, int32 SlotID, UKeyAlreadyBoundWarning* DuplicateKeyPressAnyKeyPanel) const;
+
 	void ChangeBinding(int32 InKeyBindSlot, const FKey& InKey);
 	
 	void HandleKeySelectionCanceled(UGameSettingPressAnyKey* PressAnyKeyPanel) const;
@@ -69,16 +64,16 @@ protected:
 
 private:	// Bound Widgets
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget, BlueprintProtected = true, AllowPrivateAccess = true))
-	TObjectPtr<ULyraButtonBase> Button_PrimaryKey;
+	TObjectPtr<UWidget_KeyRemapButtonBase> Button_PrimaryKey;
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget, BlueprintProtected = true, AllowPrivateAccess = true))
-	TObjectPtr<ULyraButtonBase> Button_SecondaryKey;
+	TObjectPtr<UWidget_KeyRemapButtonBase> Button_SecondaryKey;
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget, BlueprintProtected = true, AllowPrivateAccess = true))
-	TObjectPtr<ULyraButtonBase> Button_ThirdKey;
+	TObjectPtr<UWidget_KeyRemapButtonBase> Button_ThirdKey;
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget, BlueprintProtected = true, AllowPrivateAccess = true))
-	TObjectPtr<ULyraButtonBase> Button_FourthKey;
+	TObjectPtr<UWidget_KeyRemapButtonBase> Button_FourthKey;
 	
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget, BlueprintProtected = true, AllowPrivateAccess = true))
 	TObjectPtr<ULyraButtonBase> Button_Clear;
@@ -86,5 +81,5 @@ private:	// Bound Widgets
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget, BlueprintProtected = true, AllowPrivateAccess = true))
 	TObjectPtr<ULyraButtonBase> Button_ResetToDefault;
 
-	TArray<TObjectPtr<ULyraButtonBase>> Buttons;
+	TArray<TObjectPtr<UWidget_KeyRemapButtonBase>> Buttons;
 };

@@ -54,31 +54,28 @@ const FKey& ULyraSettingKeyboardInput::GetCurrentKey(const EPlayerMappableKeySlo
 {
 	if (InitialKeyMappings.Contains(InSlot))
 	{
-		return *InitialKeyMappings.Find(InSlot);
+		if (CachedOwningKeyProfile)
+		{
+			FPlayerMappableKeyQueryOptions QueryOptionsForSlot = QueryOptions;
+			QueryOptionsForSlot.SlotToMatch = InSlot;
+
+			if (const FKeyMappingRow* Row = FindKeyMappingRow())
+			{
+				for (const FPlayerKeyMapping& Mapping : Row->Mappings)
+				{
+					if (CachedOwningKeyProfile->DoesMappingPassQueryOptions(Mapping, QueryOptionsForSlot))
+					{
+						return Mapping.GetCurrentKey();
+					}
+				}
+			}
+		}
 	}
+	UE_LOG(LogTemp, Warning, TEXT("Can not find key from MappingName: %s -- SlotID:%d ,Try to find by FMapPlayerKeyArgs"), *ActionMappingName.ToString(), InSlot)
 	FMapPlayerKeyArgs KeyArgs;
 	KeyArgs.MappingName = ActionMappingName;
 	KeyArgs.Slot = InSlot;
 	return CachedOwningKeyProfile->FindKeyMapping(KeyArgs)->GetCurrentKey();
-	
-	// if (CachedOwningKeyProfile)
-	// {
-	// 	FPlayerMappableKeyQueryOptions QueryOptionsForSlot = QueryOptions;
-	// 	QueryOptionsForSlot.SlotToMatch = InSlot;
-	//
-	// 	// if (const FKeyMappingRow* Row = FindKeyMappingRow())
-	// 	// {
-	// 	// 	for (const FPlayerKeyMapping& Mapping : Row->Mappings)
-	// 	// 	{
-	// 	// 		if (CachedOwningKeyProfile->DoesMappingPassQueryOptions(Mapping, QueryOptionsForSlot))
-	// 	// 		{
-	// 	// 			return Mapping.GetCurrentKey();
-	// 	// 		}
-	// 	// 	}
-	// 	// }
-	//
-	// }
-	// return EKeys::Invalid;
 }
 
 bool ULyraSettingKeyboardInput::GetIconFromKey(FSlateBrush& OutBrush, const FKey& InKey) const
@@ -121,9 +118,9 @@ bool ULyraSettingKeyboardInput::GetIconFromCurrentKey(FSlateBrush& OutBrush, con
 
 const FKeyMappingRow* ULyraSettingKeyboardInput::FindKeyMappingRow() const
 {
-	if (const UEnhancedPlayerMappableKeyProfile* Profile = FindMappableKeyProfile())
+	if (CachedOwningKeyProfile)
 	{
-		return Profile->FindKeyMappingRow(ActionMappingName);
+		return CachedOwningKeyProfile->FindKeyMappingRow(ActionMappingName);
 	}
 
 	ensure(false);
@@ -174,9 +171,9 @@ void ULyraSettingKeyboardInput::InitializeInputData(UEnhancedInputUserSettings* 
 		{
 			continue;
 		}
-		const int SlotID=static_cast<int>(Mapping.GetSlot());
+		const int SlotID = static_cast<int>(Mapping.GetSlot());
 
-		UE_LOG(LogTemp, Log, TEXT("MappingDisplayName: %s -- SlotID: %d"),*Mapping.GetDisplayName().ToString(), SlotID);
+		UE_LOG(LogTemp, Log, TEXT("MappingDisplayName: %s -- SlotID: %d"), *Mapping.GetDisplayName().ToString(), SlotID);
 		ActionMappingName = Mapping.GetMappingName();
 		InitialKeyMappings.Add(Mapping.GetSlot(), Mapping.GetCurrentKey());
 
@@ -249,13 +246,13 @@ bool ULyraSettingKeyboardInput::IsSlotValid(const EPlayerMappableKeySlot InSlot)
 
 void ULyraSettingKeyboardInput::ResetToDefault()
 {
-	if (UEnhancedInputUserSettings* Settings = GetUserSettings())
+	if (CachedOwningInputUserSettings)
 	{
 		FMapPlayerKeyArgs Args = {};
 		Args.MappingName = ActionMappingName;
 
 		FGameplayTagContainer FailureReason;
-		Settings->ResetAllPlayerKeysInRow(Args, FailureReason);
+		CachedOwningInputUserSettings->ResetAllPlayerKeysInRow(Args, FailureReason);
 
 		NotifySettingChanged(EGameSettingChangeReason::Change);
 	}

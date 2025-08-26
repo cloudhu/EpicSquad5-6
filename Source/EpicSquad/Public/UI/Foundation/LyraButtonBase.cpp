@@ -44,8 +44,7 @@ void ULyraButtonBase::RefreshButtonText()
 	{
 		if (InputActionWidget)
 		{
-			const FText ActionDisplayText = InputActionWidget->GetDisplayText();
-			if (!ActionDisplayText.IsEmpty())
+			if (const FText ActionDisplayText = InputActionWidget->GetDisplayText(); !ActionDisplayText.IsEmpty())
 			{
 				UpdateButtonText(ActionDisplayText);
 				return;

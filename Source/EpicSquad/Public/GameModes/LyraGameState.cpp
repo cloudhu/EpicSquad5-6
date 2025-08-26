@@ -1,19 +1,13 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "LyraGameState.h"
-#include "AbilitySystemComponent.h"
 #include "GameFramework/GameplayMessageSubsystem.h"
 #include "Messages/LyraVerbMessage.h"
-#include "AbilitySystem/NinjaGASAbilitySystemComponent.h"
-
 #include "GameFramework/PlayerState.h"
 
 #include "Net/UnrealNetwork.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(LyraGameState)
-
-class APlayerState;
-class FLifetimeProperty;
 
 extern ENGINE_API float GAverageFPS;
 
@@ -23,12 +17,6 @@ ALyraGameState::ALyraGameState(const FObjectInitializer& ObjectInitializer)
 {
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = true;
-
-	AbilitySystemComponent = ObjectInitializer.CreateDefaultSubobject<UNinjaGASAbilitySystemComponent>(this, TEXT("AbilitySystemComponent"));
-	AbilitySystemComponent->SetIsReplicated(true);
-	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
-
-	//ExperienceManagerComponent = CreateDefaultSubobject<ULyraExperienceManagerComponent>(TEXT("ExperienceManagerComponent"));
 
 	ServerFPS = 0.0f;
 }
@@ -41,14 +29,7 @@ void ALyraGameState::PreInitializeComponents()
 void ALyraGameState::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
-
-	check(AbilitySystemComponent);
-	AbilitySystemComponent->InitAbilityActorInfo(/*Owner=*/ this, /*Avatar=*/ this);
-}
-
-UAbilitySystemComponent* ALyraGameState::GetAbilitySystemComponent() const
-{
-	return AbilitySystemComponent;
+	
 }
 
 void ALyraGameState::EndPlay(const EEndPlayReason::Type EndPlayReason)

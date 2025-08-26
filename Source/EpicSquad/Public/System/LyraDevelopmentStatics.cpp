@@ -217,8 +217,17 @@ TSoftObjectPtr<UTexture2D> ULyraDevelopmentStatics::GetSoftImageByTag(FGameplayT
 {
 	const UEpicDeveloperSettings* FrontendDeveloperSettings = GetDefault<UEpicDeveloperSettings>();
 
-	checkf(FrontendDeveloperSettings->OptionsScreenSoftImageMap.Contains(InImageTag),TEXT("Could not find an image accociated with tag %s"),*InImageTag.ToString());
+	checkf(FrontendDeveloperSettings->ScreenSoftImageMap.Contains(InImageTag),TEXT("Could not find an image associated with tag %s"),*InImageTag.ToString());
 
-	return FrontendDeveloperSettings->OptionsScreenSoftImageMap.FindRef(InImageTag);
+	return FrontendDeveloperSettings->ScreenSoftImageMap.FindRef(InImageTag);
+}
+
+TSoftObjectPtr<UMaterialInstance> ULyraDevelopmentStatics::GetSoftMaterialInstanceByTag(FGameplayTag InGameplayTag)
+{
+	const UEpicDeveloperSettings* FrontendDeveloperSettings = GetDefault<UEpicDeveloperSettings>();
+
+	checkf(FrontendDeveloperSettings->SoftMaterialInstanceMap.Contains(InGameplayTag),TEXT("Could not find an image associated with tag %s"),*InGameplayTag.ToString());
+
+	return FrontendDeveloperSettings->SoftMaterialInstanceMap.FindRef(InGameplayTag);
 }
 

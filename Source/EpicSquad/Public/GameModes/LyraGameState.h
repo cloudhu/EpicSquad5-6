@@ -2,14 +2,12 @@
 
 #pragma once
 
-#include "AbilitySystemInterface.h"
 #include "ModularGameState.h"
 
 #include "LyraGameState.generated.h"
 
 #define UE_API EPICSQUAD_API
 
-class UNinjaGASAbilitySystemComponent;
 struct FLyraVerbMessage;
 
 class APlayerState;
@@ -24,7 +22,7 @@ struct FFrame;
  *	The base game state class used by this project.
  */
 UCLASS(MinimalAPI, Config = Game)
-class ALyraGameState : public AModularGameStateBase, public IAbilitySystemInterface
+class ALyraGameState : public AModularGameStateBase
 {
 	GENERATED_BODY()
 
@@ -44,15 +42,9 @@ public:
 	UE_API virtual void RemovePlayerState(APlayerState* PlayerState) override;
 	UE_API virtual void SeamlessTravelTransitionCheckpoint(bool bToTransitionMap) override;
 	//~End of AGameStateBase interface
+	
 
-	//~IAbilitySystemInterface
-	UE_API virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
-	//~End of IAbilitySystemInterface
-
-	// Gets the ability system component used for game wide things
-	UFUNCTION(BlueprintCallable, Category = "Lyra|GameState")
-	UNinjaGASAbilitySystemComponent* GetLyraAbilitySystemComponent() const { return AbilitySystemComponent; }
-
+	
 	// Send a message that all clients will (probably) get
 	// (use only for client notifications like eliminations, server join messages, etc... that can handle being lost)
 	UFUNCTION(NetMulticast, Unreliable, BlueprintCallable, Category = "Lyra|GameState")
@@ -76,14 +68,6 @@ public:
 	DECLARE_MULTICAST_DELEGATE_OneParam(FOnRecorderPlayerStateChanged, APlayerState*);
 	FOnRecorderPlayerStateChanged OnRecorderPlayerStateChangedEvent;
 
-private:
-	// Handles loading and managing the current gameplay experience
-	// UPROPERTY()
-	// TObjectPtr<ULyraExperienceManagerComponent> ExperienceManagerComponent;
-
-	// The ability system component subobject for game-wide things (primarily gameplay cues)
-	UPROPERTY(VisibleAnywhere, Category = "Lyra|GameState")
-	TObjectPtr<UNinjaGASAbilitySystemComponent> AbilitySystemComponent;
 
 protected:
 	UPROPERTY(Replicated)

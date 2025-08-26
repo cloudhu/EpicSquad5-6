@@ -3,14 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Player/EpicSquadPlayerController.h"
+
 #include "FrontendPlayerController.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class EPICSQUAD_API AFrontendPlayerController : public AEpicSquadPlayerController
+class EPICSQUAD_API AFrontendPlayerController : public APlayerController
 {
 	GENERATED_BODY()
 protected:
