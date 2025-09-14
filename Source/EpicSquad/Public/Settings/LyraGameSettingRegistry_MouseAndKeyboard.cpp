@@ -1,7 +1,6 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "CommonInputBaseTypes.h"
-#include "EnhancedInputSubsystems.h"
 #include "CustomSettings/LyraSettingKeyboardInput.h"
 #include "EditCondition/WhenCondition.h"
 #include "GameSettingCollection.h"
@@ -9,6 +8,11 @@
 #include "GameSettingValueScalarDynamic.h"
 #include "LyraGameSettingRegistry.h"
 #include "LyraSettingsShared.h"
+#include "NinjaInputFunctionLibrary.h"
+#include "Components/NinjaInputManagerComponent.h"
+
+#include "Input/Settings/NinjaInputUserSettings.h"
+
 #include "Player/LyraLocalPlayer.h"
 
 #define LOCTEXT_NAMESPACE "Lyra"
@@ -137,9 +141,12 @@ UGameSettingCollection* ULyraGameSettingRegistry::InitializeMouseAndKeyboardSett
 		KeyBinding->SetDisplayName(LOCTEXT("KeyBindingCollection_Name", "Keyboard & Mouse"));
 		Screen->AddSetting(KeyBinding);
 
-		const UEnhancedInputLocalPlayerSubsystem* EiSubsystem = InLocalPlayer->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
-		UEnhancedInputUserSettings* UserSettings = EiSubsystem->GetUserSettings();
-
+		// const UEnhancedInputLocalPlayerSubsystem* EiSubsystem = InLocalPlayer->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
+		// UEnhancedInputUserSettings* UserSettings = EiSubsystem->GetUserSettings();
+		const UNinjaInputManagerComponent* InputManager = UNinjaInputFunctionLibrary::GetInputManagerComponent(InLocalPlayer->GetPlayerController(nullptr));
+		checkf(InputManager,TEXT("Can not Get UNinjaInputManagerComponent from InLocalPlayer"));
+		UNinjaInputUserSettings* UserSettings = InputManager->GetInputUserSettings();
+		checkf(UserSettings,TEXT("Can not Get UNinjaInputUserSettings from InputManager"));
 		// If you want to just get one profile pair, then you can do UserSettings->GetCurrentProfile
 
 		// A map of key bindings mapped to their display category
@@ -191,21 +198,32 @@ UGameSettingCollection* ULyraGameSettingRegistry::InitializeMouseAndKeyboardSett
 			{
 				// Create a setting row for anything with valid mappings and that we haven't created yet
 				//EpicDebug::Print(RowPair.Value.HasAnyMappings() ? " RowPair.Value.HasAnyMappings : True" : "RowPair.Value.HasAnyMappings : false");
-				if (RowPair.Value.HasAnyMappings() /* && !CreatedMappingNames.Contains(RowPair.Key)*/)
+				if (RowPair.Value.HasAnyMappings())
 				{
 					const FText& DesiredDisplayCategory = RowPair.Value.Mappings.begin()->GetDisplayCategory();
 
 					if (UGameSettingCollection* Collection = GetOrCreateSettingCollection(DesiredDisplayCategory))
 					{
-						// Create the settings widget and initialize it, adding it to this config's section
-						ULyraSettingKeyboardInput* InputBinding = NewObject<ULyraSettingKeyboardInput>();
-
-						InputBinding->InitializeInputData(UserSettings, Profile, RowPair.Value, Options);
-
-						InputBinding->AddEditCondition(WhenPlatformSupportsMouseAndKeyboard);
-
-						Collection->AddSetting(InputBinding);
-						CreatedMappingNames.Add(RowPair.Key);
+						//遍历所有的按键映射
+						for (const FPlayerKeyMapping& Mapping : RowPair.Value.Mappings)
+						{
+							// Only add mappings that pass the query filters that have been provided upon creation
+							//这里刷选出符合条件的有效按键，不符合条件的跳过
+							if (!Profile->DoesMappingPassQueryOptions(Mapping, Options) || !Mapping.IsValid() || Mapping.GetMappingName().IsNone() ||
+								CreatedMappingNames.Contains(Mapping.GetMappingName()))
+							{
+								continue;
+							}
+							// Create the settings widget and initialize it, adding it to this config's section
+							// 创建设置的按键的数据，这里和键盘设置共用一个类，当然，需要对其进行改造
+							ULyraSettingKeyboardInput* InputBinding = NewObject<ULyraSettingKeyboardInput>();
+							//初始化输入数据
+							InputBinding->InitializeInputData(UserSettings,Profile, Mapping, Options);
+							//添加到集合大类中
+							Collection->AddSetting(InputBinding);
+							//添加到已创建的映射名称中，避免重复创建
+							CreatedMappingNames.Add(Mapping.GetMappingName());
+						}
 					}
 					else
 					{

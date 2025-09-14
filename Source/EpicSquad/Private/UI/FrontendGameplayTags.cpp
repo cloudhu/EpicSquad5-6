@@ -19,6 +19,7 @@ namespace UIGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(UI_Widget_ReplayScreen,"UI.Widget.ReplayScreen");
 	UE_DEFINE_GAMEPLAY_TAG(UI_Widget_CreditsScreen,"UI.Widget.CreditsScreen");
 	UE_DEFINE_GAMEPLAY_TAG(UI_Widget_SaveFileAction,"UI.Widget.SaveFileAction");
+	UE_DEFINE_GAMEPLAY_TAG(UI_Widget_HUD,"UI.Widget.HUD");
 
 	//UI Options Image
 	UE_DEFINE_GAMEPLAY_TAG(UI_Image_Logo,"UI.Image.Logo");

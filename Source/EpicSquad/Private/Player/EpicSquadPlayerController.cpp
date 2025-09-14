@@ -1,7 +1,6 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "Player/EpicSquadPlayerController.h"
-#include "EnhancedInputSubsystems.h"
 
 #include "Components/NinjaFactionComponent.h"
 #include "Components/NinjaInputManagerComponent.h"

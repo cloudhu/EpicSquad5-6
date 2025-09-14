@@ -4,13 +4,15 @@
 
 #include "CoreMinimal.h"
 
+#include "Player/EpicSquadPlayerController.h"
+
 #include "FrontendPlayerController.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class EPICSQUAD_API AFrontendPlayerController : public APlayerController
+class EPICSQUAD_API AFrontendPlayerController : public AEpicSquadPlayerController
 {
 	GENERATED_BODY()
 protected:

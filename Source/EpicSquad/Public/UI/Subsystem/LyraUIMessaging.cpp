@@ -1,13 +1,13 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "LyraUIMessaging.h"
-
-#include "Messaging/CommonGameDialog.h"
 #include "NativeGameplayTags.h"
-#include "CommonLocalPlayer.h"
 #include "LyraUIManagerSubsystem.h"
-#include "PrimaryGameLayout.h"
 #include "System/LyraDevelopmentStatics.h"
+
+#include "UI/CommonGame/PrimaryGameLayout.h"
+#include "UI/Messaging/CommonGameDialog.h"
+
 #include "Widgets/CommonActivatableWidgetContainer.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(LyraUIMessaging)
@@ -42,18 +42,6 @@ void ULyraUIMessaging::ShowConfirmation(UCommonGameDialogDescriptor* DialogDescr
 				});
 		}
 	}
-	else if (const UCommonLocalPlayer* LocalPlayer = GetLocalPlayer<UCommonLocalPlayer>())
-	{
-		if (UPrimaryGameLayout* Layout = LocalPlayer->GetRootUILayout())
-		{
-			Layout->PushWidgetToLayerStack<UCommonGameDialog>(
-				TAG_UI_LAYER_MODAL, ConfirmationDialogClassPtr,
-				[DialogDescriptor, ResultCallback](UCommonGameDialog& Dialog)
-				{
-					Dialog.SetupDialog(DialogDescriptor, ResultCallback);
-				});
-		}
-	}
 }
 
 void ULyraUIMessaging::ShowError(UCommonGameDialogDescriptor* DialogDescriptor, FCommonMessagingResultDelegate ResultCallback)
@@ -65,18 +53,6 @@ void ULyraUIMessaging::ShowError(UCommonGameDialogDescriptor* DialogDescriptor, 
 		{
 			//EpicDebug::Print(ConfirmationDialogClassPtr.Get()?"True":"False");
 			RootLayout->PushWidgetToLayerStack<UCommonGameDialog>(
-				TAG_UI_LAYER_MODAL, ErrorDialogClassPtr,
-				[DialogDescriptor, ResultCallback](UCommonGameDialog& Dialog)
-				{
-					Dialog.SetupDialog(DialogDescriptor, ResultCallback);
-				});
-		}
-	}
-	else if (const UCommonLocalPlayer* LocalPlayer = GetLocalPlayer<UCommonLocalPlayer>())
-	{
-		if (UPrimaryGameLayout* Layout = LocalPlayer->GetRootUILayout())
-		{
-			Layout->PushWidgetToLayerStack<UCommonGameDialog>(
 				TAG_UI_LAYER_MODAL, ErrorDialogClassPtr,
 				[DialogDescriptor, ResultCallback](UCommonGameDialog& Dialog)
 				{

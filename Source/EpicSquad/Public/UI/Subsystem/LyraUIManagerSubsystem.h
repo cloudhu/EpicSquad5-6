@@ -2,10 +2,12 @@
 
 #pragma once
 
-#include "GameUIManagerSubsystem.h"
+
+#include "UI/CommonGame/GameUIManagerSubsystem.h"
 
 #include "LyraUIManagerSubsystem.generated.h"
 
+class UPrimaryGameLayout;
 class FSubsystemCollectionBase;
 class UObject;
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnLayoutLoaded, const bool /*bSuccess*/);

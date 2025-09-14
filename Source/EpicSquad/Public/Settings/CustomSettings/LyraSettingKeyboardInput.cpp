@@ -4,8 +4,12 @@
 
 #include "CommonInputSubsystem.h"
 #include "EnhancedInputSubsystems.h"
-#include "Player/LyraLocalPlayer.h"
-#include "PlayerMappableInputConfig.h"
+
+#include "Input/Settings/NinjaInputUserSettings.h"
+
+#include "UI/Messaging/CommonGameDialog.h"
+#include "UI/Subsystem/LyraUIMessaging.h"
+
 #include "UserSettings/EnhancedInputUserSettings.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(LyraSettingKeyboardInput)
@@ -154,34 +158,25 @@ void ULyraSettingKeyboardInput::OnInitialized()
 	Super::OnInitialized();
 }
 
-void ULyraSettingKeyboardInput::InitializeInputData(UEnhancedInputUserSettings* InOwningInputUserSettings, UEnhancedPlayerMappableKeyProfile* KeyProfile,
-                                                    const FKeyMappingRow& MappingData,
-                                                    const FPlayerMappableKeyQueryOptions& InQueryOptions)
+void ULyraSettingKeyboardInput::InitializeInputData(UNinjaInputUserSettings* InOwningInputUserSettings, UEnhancedPlayerMappableKeyProfile* KeyProfile,
+							 const FPlayerKeyMapping& Mapping, const FPlayerMappableKeyQueryOptions& InQueryOptions)
 {
+	
 	check(KeyProfile);
-
-	//ProfileIdentifier = KeyProfile->GetProfileIdString();
+	CachedOwningInputUserSettings=InOwningInputUserSettings;
+	CachedOwningKeyProfile=KeyProfile;
+	//把数据ID和查询刷选条件缓存起来
+	ProfileIdentifier = KeyProfile->GetProfileIdString();
 	QueryOptions = InQueryOptions;
-	CachedOwningInputUserSettings = InOwningInputUserSettings;
-	CachedOwningKeyProfile = KeyProfile;
-	for (const FPlayerKeyMapping& Mapping : MappingData.Mappings)
+	//拿到按键映射名称，也缓存起来，把槽位和按键保存到初始映射集合中待用
+	ActionMappingName = Mapping.GetMappingName();
+	InitialKeyMappings.Add(Mapping.GetSlot(), Mapping.GetCurrentKey());
+	//设置显示名
+	if (const FText& MappingDisplayName = Mapping.GetDisplayName(); !MappingDisplayName.IsEmpty())
 	{
-		// Only add mappings that pass the query filters that have been provided upon creation
-		if (!KeyProfile->DoesMappingPassQueryOptions(Mapping, QueryOptions))
-		{
-			continue;
-		}
-		const int SlotID = static_cast<int>(Mapping.GetSlot());
-
-		UE_LOG(LogTemp, Log, TEXT("MappingDisplayName: %s -- SlotID: %d"), *Mapping.GetDisplayName().ToString(), SlotID);
-		ActionMappingName = Mapping.GetMappingName();
-		InitialKeyMappings.Add(Mapping.GetSlot(), Mapping.GetCurrentKey());
-
-		if (const FText& MappingDisplayName = Mapping.GetDisplayName(); !MappingDisplayName.IsEmpty())
-		{
-			SetDisplayName(MappingDisplayName);
-		}
+		SetDisplayName(MappingDisplayName);
 	}
+	//如果匹配的按键是W，那么就是键盘输入，否则就是手柄输入，并根据硬件添加不同的前缀名称，可以避免重名
 	FString NameString = TEXT("KBM_Input_") + ActionMappingName.ToString();
 	if (InQueryOptions.KeyToMatch == EKeys::W)
 	{
@@ -192,8 +187,8 @@ void ULyraSettingKeyboardInput::InitializeInputData(UEnhancedInputUserSettings* 
 		CachedDesiredInputKeyType = ECommonInputType::Gamepad;
 		NameString = TEXT("GAMEPAD_Input_") + ActionMappingName.ToString();
 	}
-
-	//EpicDebug::Print(TEXT("ULyraSettingKeyboardInput::InitializeInputData NameString :") + NameString);
+	//打印出来看看数据是否有问题
+	UE_LOG(LogTemp, Warning, TEXT("NameString: %s"), *NameString);
 	SetDevName(*NameString);
 }
 
@@ -268,6 +263,15 @@ void ULyraSettingKeyboardInput::StoreInitial()
 			{
 				if (Profile->DoesMappingPassQueryOptions(Mapping, QueryOptions))
 				{
+					if (CachedDesiredInputKeyType == ECommonInputType::MouseAndKeyboard && Mapping.GetCurrentKey().IsGamepadKey())
+					{
+						continue;
+					}
+
+					if (CachedDesiredInputKeyType == ECommonInputType::Gamepad && !Mapping.GetCurrentKey().IsGamepadKey())
+					{
+						continue;
+					}
 					ActionMappingName = Mapping.GetMappingName();
 					InitialKeyMappings.Add(Mapping.GetSlot(), Mapping.GetCurrentKey());
 				}
@@ -286,11 +290,25 @@ void ULyraSettingKeyboardInput::RestoreToInitial()
 
 bool ULyraSettingKeyboardInput::ChangeBinding(const int32 InKeyBindSlot, const FKey& NewKey)
 {
-	if (!NewKey.IsGamepadKey())
+	bool CanBind = false;
+	FText WarningTitle = LOCTEXT("WarningKeyChangeBinding_Title", "Please use the Mouse And Keyboard to input!");
+
+	if (CachedDesiredInputKeyType == ECommonInputType::MouseAndKeyboard)
+	{
+		//当前需要的是键盘输入，不接受手柄输入
+		CanBind = !NewKey.IsGamepadKey();
+	}
+	else if (CachedDesiredInputKeyType == ECommonInputType::Gamepad)
+	{
+		CanBind = NewKey.IsGamepadKey();
+		WarningTitle = LOCTEXT("WarningKeyChangeBinding_Title", "Please use the Gamepad to input!");
+	}
+
+	if (CanBind)
 	{
 		FMapPlayerKeyArgs Args = {};
 		Args.MappingName = ActionMappingName;
-		Args.Slot = static_cast<EPlayerMappableKeySlot>(static_cast<uint8>(InKeyBindSlot));
+		Args.Slot = static_cast<EPlayerMappableKeySlot>(InKeyBindSlot);
 		Args.NewKey = NewKey;
 		// If you want to, you can additionally specify this mapping to only be applied to a certain hardware device or key profile
 		//Args.ProfileId =
@@ -300,13 +318,23 @@ bool ULyraSettingKeyboardInput::ChangeBinding(const int32 InKeyBindSlot, const F
 		{
 			FGameplayTagContainer FailureReason;
 			Settings->MapPlayerKey(Args, FailureReason);
+			StoreInitial();
 			NotifySettingChanged(EGameSettingChangeReason::Change);
 		}
 
 		return true;
 	}
+	if (ULyraUIMessaging* Messaging = LocalPlayer->GetSubsystem<ULyraUIMessaging>())
+	{
+		Messaging->ShowConfirmation(
+			UCommonGameDialogDescriptor::CreateConfirmationOk(
+				WarningTitle,
+				LOCTEXT("WarningKeyChangeBinding_Message", "You will need to use the corresponding input device to change binding.")
+			)
+		);
+	}
+	return CanBind;
 
-	return false;
 }
 
 void ULyraSettingKeyboardInput::GetAllMappedActionsFromKey(int32 InKeyBindSlot, const FKey& Key, TArray<FName>& OutActionNames) const

@@ -25,6 +25,7 @@ public:
 	// -- End InventorySystem implementation
 
 	AEpicSquadPlayerController* GetEpicSquadPC() const;
+	
 private:
 
 	/** Inventory Manager component. */

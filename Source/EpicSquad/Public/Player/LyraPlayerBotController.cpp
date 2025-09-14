@@ -14,8 +14,7 @@
 
 class UObject;
 
-ALyraPlayerBotController::ALyraPlayerBotController(const FObjectInitializer& ObjectInitializer)
-	: Super(ObjectInitializer)
+ALyraPlayerBotController::ALyraPlayerBotController()
 {
 	bWantsPlayerState = true;
 	bStopAILogicOnUnposses = false;

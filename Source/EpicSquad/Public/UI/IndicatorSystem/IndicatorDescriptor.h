@@ -11,14 +11,13 @@
 
 class SWidget;
 class UIndicatorDescriptor;
-class ULyraIndicatorManagerComponent;
 class UUserWidget;
 struct FFrame;
 struct FSceneViewProjectionData;
 
 struct FIndicatorProjection
 {
-	bool Project(const UIndicatorDescriptor& IndicatorDescriptor, const FSceneViewProjectionData& InProjectionData, const FVector2f& ScreenSize, FVector& ScreenPositionWithDepth);
+	static bool Project(const UIndicatorDescriptor& IndicatorDescriptor, const FSceneViewProjectionData& InProjectionData, const FVector2f& ScreenSize, FVector& ScreenPositionWithDepth);
 };
 
 UENUM(BlueprintType)
@@ -168,7 +167,6 @@ public:
 		BoundingBoxAnchor = InBoundingBoxAnchor;
 	}
 
-public:
 	// Sorting Properties
 	//=======================
 
@@ -182,12 +180,6 @@ public:
 		Priority = InPriority;
 	}
 
-public:
-	ULyraIndicatorManagerComponent* GetIndicatorManagerComponent() { return ManagerPtr.Get(); }
-	UE_API void SetIndicatorManagerComponent(ULyraIndicatorManagerComponent* InManager);
-	
-	UFUNCTION(BlueprintCallable)
-	UE_API void UnregisterIndicator();
 
 private:
 	UPROPERTY()
@@ -232,9 +224,6 @@ private:
 
 	UPROPERTY()
 	TSoftClassPtr<UUserWidget> IndicatorWidgetClass;
-
-	UPROPERTY()
-	TWeakObjectPtr<ULyraIndicatorManagerComponent> ManagerPtr;
 
 	TWeakPtr<SWidget> Content;
 	TWeakPtr<SWidget> CanvasHost;

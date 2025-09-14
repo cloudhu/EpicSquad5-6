@@ -47,19 +47,14 @@ public class EpicSquad : ModuleRules
 			"CommonInput",
 			"NinjaFactions",
 			//From Lyra
-			"AsyncMixin",
 			"GameSettings",
 			"GameSubtitles",
 			"CommonLoadingScreen",
 			"DataRegistry",
-			"CommonGame",
-			"ControlFlows",
 			"GameFeatures",			
 			"ReplicationGraph",
-			"ModularGameplay",
-			"ModularGameplayActors",
 			"PropertyPath",
-			"Hotfix",
+			"AsyncMixin"
 		]);
 
 		PrivateDependencyModuleNames.AddRange([
@@ -78,14 +73,12 @@ public class EpicSquad : ModuleRules
 			"CommonInput",
 			"GameplayTags",
 			"AudioModulation",
-			"CommonGame",
 			"CommonUser",
 			"GameSettings",
 			"GameSubtitles",
 			"GameplayMessageRuntime",
 			"AudioMixer",
 			"NetworkReplayStreaming",
-			"UIExtension",
 			"ClientPilot",
 			"EngineSettings",
 			"DTLSHandlerComponent",

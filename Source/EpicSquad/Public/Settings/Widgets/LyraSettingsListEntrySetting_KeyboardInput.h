@@ -68,12 +68,6 @@ private:	// Bound Widgets
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget, BlueprintProtected = true, AllowPrivateAccess = true))
 	TObjectPtr<UWidget_KeyRemapButtonBase> Button_SecondaryKey;
-
-	UPROPERTY(BlueprintReadOnly, meta = (BindWidget, BlueprintProtected = true, AllowPrivateAccess = true))
-	TObjectPtr<UWidget_KeyRemapButtonBase> Button_ThirdKey;
-
-	UPROPERTY(BlueprintReadOnly, meta = (BindWidget, BlueprintProtected = true, AllowPrivateAccess = true))
-	TObjectPtr<UWidget_KeyRemapButtonBase> Button_FourthKey;
 	
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget, BlueprintProtected = true, AllowPrivateAccess = true))
 	TObjectPtr<ULyraButtonBase> Button_Clear;

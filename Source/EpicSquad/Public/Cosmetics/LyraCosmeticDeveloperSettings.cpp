@@ -8,7 +8,6 @@
 #include "System/LyraDevelopmentStatics.h"
 #include "TimerManager.h"
 #include "Engine/Engine.h"
-#include "LyraControllerComponent_CharacterParts.h"
 #include "EngineUtils.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(LyraCosmeticDeveloperSettings)
@@ -57,26 +56,26 @@ void ULyraCosmeticDeveloperSettings::ApplySettings()
 
 void ULyraCosmeticDeveloperSettings::ReapplyLoadoutIfInPIE()
 {
-#if WITH_SERVER_CODE
-	// Update the loadout on all players
-	UWorld* ServerWorld = ULyraDevelopmentStatics::FindPlayInEditorAuthorityWorld();
-	if (ServerWorld != nullptr)
-	{
-		ServerWorld->GetTimerManager().SetTimerForNextTick(FTimerDelegate::CreateLambda([=]()
-			{
-				for (TActorIterator<APlayerController> PCIterator(ServerWorld); PCIterator; ++PCIterator)
-				{
-					if (APlayerController* PC = *PCIterator)
-					{
-						if (ULyraControllerComponent_CharacterParts* CosmeticComponent = PC->FindComponentByClass<ULyraControllerComponent_CharacterParts>())
-						{
-							CosmeticComponent->ApplyDeveloperSettings();
-						}
-					}
-				}
-			}));
-	}
-#endif	// WITH_SERVER_CODE
+// #if WITH_SERVER_CODE
+// 	// Update the loadout on all players
+// 	UWorld* ServerWorld = ULyraDevelopmentStatics::FindPlayInEditorAuthorityWorld();
+// 	if (ServerWorld != nullptr)
+// 	{
+// 		ServerWorld->GetTimerManager().SetTimerForNextTick(FTimerDelegate::CreateLambda([=]()
+// 			{
+// 				for (TActorIterator<APlayerController> PCIterator(ServerWorld); PCIterator; ++PCIterator)
+// 				{
+// 					if (APlayerController* PC = *PCIterator)
+// 					{
+// 						if (ULyraControllerComponent_CharacterParts* CosmeticComponent = PC->FindComponentByClass<ULyraControllerComponent_CharacterParts>())
+// 						{
+// 							CosmeticComponent->ApplyDeveloperSettings();
+// 						}
+// 					}
+// 				}
+// 			}));
+// 	}
+// #endif	// WITH_SERVER_CODE
 }
 
 void ULyraCosmeticDeveloperSettings::OnPlayInEditorStarted() const

@@ -1,7 +1,6 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "CommonInputBaseTypes.h"
-#include "EnhancedInputSubsystems.h"
 #include "GameSettingCollection.h"
 #include "GameSettingValueDiscreteDynamic.h"
 #include "GameSettingValueScalarDynamic.h"
@@ -9,8 +8,14 @@
 #include "LyraSettingsLocal.h"
 #include "LyraSettingsShared.h"
 #include "NativeGameplayTags.h"
+#include "NinjaInputFunctionLibrary.h"
+
+#include "Components/NinjaInputManagerComponent.h"
+
 #include "CustomSettings/LyraSettingKeyboardInput.h"
-#include "Input/LyraPlayerMappableKeyProfile.h"
+
+#include "Input/Settings/NinjaInputUserSettings.h"
+
 #include "Player/LyraLocalPlayer.h"
 
 #define LOCTEXT_NAMESPACE "Lyra"
@@ -225,9 +230,12 @@ UGameSettingCollection* ULyraGameSettingRegistry::InitializeGamepadSettings(ULyr
 		GamepadBinding->SetDisplayName(LOCTEXT("GamepadBindingCollection_Name", "Controls"));
 		Screen->AddSetting(GamepadBinding);
 
-		const UEnhancedInputLocalPlayerSubsystem* EiSubsystem = InLocalPlayer->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
-		UEnhancedInputUserSettings* UserSettings = EiSubsystem->GetUserSettings();
-
+		// const UEnhancedInputLocalPlayerSubsystem* EiSubsystem = InLocalPlayer->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
+		// UEnhancedInputUserSettings* UserSettings = EiSubsystem->GetUserSettings();
+		const UNinjaInputManagerComponent* InputManager = UNinjaInputFunctionLibrary::GetInputManagerComponent(InLocalPlayer->GetPlayerController(nullptr));
+		checkf(InputManager,TEXT("Can not Get UNinjaInputManagerComponent from InLocalPlayer"));
+		UNinjaInputUserSettings* UserSettings = InputManager->GetInputUserSettings();
+		checkf(UserSettings,TEXT("Can not Get UNinjaInputUserSettings from InputManager"));
 		// If you want to just get one profile pair, then you can do UserSettings->GetCurrentProfile
 
 		// A map of key bindings mapped to their display category
@@ -289,13 +297,27 @@ UGameSettingCollection* ULyraGameSettingRegistry::InitializeGamepadSettings(ULyr
 
 					if (UGameSettingCollection* Collection = GetOrCreateSettingCollection(DesiredDisplayCategory))
 					{
-						// Create the settings widget and initialize it, adding it to this config's section
-						ULyraSettingKeyboardInput* InputBinding = NewObject<ULyraSettingKeyboardInput>();
-
-						InputBinding->InitializeInputData(UserSettings,Profile, RowPair.Value, Options);
+						//遍历所有的按键映射
+						for (const FPlayerKeyMapping& Mapping : RowPair.Value.Mappings)
+						{
+							// Only add mappings that pass the query filters that have been provided upon creation
+							//这里刷选出符合条件的有效按键，不符合条件的跳过
+							if (!Profile->DoesMappingPassQueryOptions(Mapping, Options) || !Mapping.IsValid() || Mapping.GetMappingName().IsNone() ||
+								CreatedMappingNames.Contains(Mapping.GetMappingName()))
+							{
+								continue;
+							}
+							// Create the settings widget and initialize it, adding it to this config's section
+							// 创建设置的按键的数据，这里和键盘设置共用一个类，当然，需要对其进行改造
+							ULyraSettingKeyboardInput* InputBinding = NewObject<ULyraSettingKeyboardInput>();
+							//初始化输入数据
+							InputBinding->InitializeInputData(UserSettings,Profile, Mapping, Options);
+							//添加到集合大类中
+							Collection->AddSetting(InputBinding);
+							//添加到已创建的映射名称中，避免重复创建
+							CreatedMappingNames.Add(Mapping.GetMappingName());
+						}
 						
-						Collection->AddSetting(InputBinding);
-						CreatedMappingNames.Add(RowPair.Key);
 					}
 					else
 					{

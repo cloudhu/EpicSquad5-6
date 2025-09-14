@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "CommonLocalPlayer.h"
 #include "Teams/LyraTeamAgentInterface.h"
 
 #include "LyraLocalPlayer.generated.h"
@@ -24,7 +23,7 @@ struct FSwapAudioOutputResult;
  * ULyraLocalPlayer
  */
 UCLASS(MinimalAPI)
-class ULyraLocalPlayer : public UCommonLocalPlayer, public ILyraTeamAgentInterface
+class ULyraLocalPlayer : public ULocalPlayer, public ILyraTeamAgentInterface
 {
 	GENERATED_BODY()
 

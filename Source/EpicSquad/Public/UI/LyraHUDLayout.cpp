@@ -1,8 +1,6 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "LyraHUDLayout.h"
-
-#include "CommonUIExtensions.h"
 #include "CommonUISettings.h"
 #include "GameFramework/InputDeviceSubsystem.h"
 #include "GameFramework/InputSettings.h"
@@ -16,6 +14,8 @@
 #if WITH_EDITOR
 #include "CommonUIVisibilitySubsystem.h"
 #endif	// WITH_EDITOR
+
+#include "CommonGame/CommonUIExtensions.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(LyraHUDLayout)
 

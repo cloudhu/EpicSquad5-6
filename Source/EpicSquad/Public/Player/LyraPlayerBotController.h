@@ -2,7 +2,8 @@
 
 #pragma once
 
-#include "ModularAIController.h"
+#include "AI/NinjaFactionAIController.h"
+
 #include "Teams/LyraTeamAgentInterface.h"
 
 #include "LyraPlayerBotController.generated.h"
@@ -21,12 +22,12 @@ struct FFrame;
  *	The controller class used by player bots in this project.
  */
 UCLASS(Blueprintable)
-class EPICSQUAD_API ALyraPlayerBotController : public AModularAIController, public ILyraTeamAgentInterface
+class EPICSQUAD_API ALyraPlayerBotController : public ANinjaFactionAIController, public ILyraTeamAgentInterface
 {
 	GENERATED_BODY()
 
 public:
-	ALyraPlayerBotController(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+	ALyraPlayerBotController();
 
 	//~ILyraTeamAgentInterface interface
 	virtual void SetGenericTeamId(const FGenericTeamId& NewTeamID) override;

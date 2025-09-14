@@ -3,10 +3,14 @@
 #pragma once
 
 #include "GameSettingValue.h"
+
 #include "UserSettings/EnhancedInputUserSettings.h"
 
 #include "LyraSettingKeyboardInput.generated.h"
 
+class UEnhancedInputUserSettings;
+class UEnhancedPlayerMappableKeyProfile;
+class UNinjaInputUserSettings;
 enum class ECommonInputType : uint8;
 class UObject;
 
@@ -22,8 +26,9 @@ class EPICSQUAD_API ULyraSettingKeyboardInput : public UGameSettingValue
 public:
 	ULyraSettingKeyboardInput();
 
-	void InitializeInputData(UEnhancedInputUserSettings* InOwningInputUserSettings, UEnhancedPlayerMappableKeyProfile* KeyProfile,
-	                         const FKeyMappingRow& MappingData, const FPlayerMappableKeyQueryOptions& InQueryOptions);
+	void InitializeInputData(UNinjaInputUserSettings* InOwningInputUserSettings,  UEnhancedPlayerMappableKeyProfile* KeyProfile,
+	                         const FPlayerKeyMapping& Mapping, const FPlayerMappableKeyQueryOptions& InQueryOptions);
+	
 
 	FText GetKeyTextFromSlot(const EPlayerMappableKeySlot InSlot) const;
 
@@ -74,7 +79,7 @@ protected:
 	ECommonInputType CachedDesiredInputKeyType;
 
 	UPROPERTY(Transient)
-	UEnhancedInputUserSettings* CachedOwningInputUserSettings;
+	UNinjaInputUserSettings* CachedOwningInputUserSettings;
 
 	UPROPERTY(Transient)
 	UEnhancedPlayerMappableKeyProfile* CachedOwningKeyProfile;

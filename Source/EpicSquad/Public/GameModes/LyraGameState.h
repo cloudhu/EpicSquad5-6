@@ -2,8 +2,8 @@
 
 #pragma once
 
-#include "ModularGameState.h"
 
+#include "GameFramework/GameState.h"
 #include "LyraGameState.generated.h"
 
 #define UE_API EPICSQUAD_API
@@ -22,7 +22,7 @@ struct FFrame;
  *	The base game state class used by this project.
  */
 UCLASS(MinimalAPI, Config = Game)
-class ALyraGameState : public AModularGameStateBase
+class ALyraGameState : public AGameState
 {
 	GENERATED_BODY()
 

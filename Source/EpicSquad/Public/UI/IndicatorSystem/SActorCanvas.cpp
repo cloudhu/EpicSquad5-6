@@ -5,7 +5,6 @@
 #include "Engine/GameViewportClient.h"
 #include "IActorIndicatorWidget.h"
 #include "Layout/ArrangedChildren.h"
-#include "LyraIndicatorManagerComponent.h"
 #include "SceneView.h"
 #include "UI/IndicatorSystem/IndicatorDescriptor.h"
 #include "Widgets/Layout/SBox.h"
@@ -165,33 +164,10 @@ EActiveTimerReturnType SActorCanvas::UpdateCanvas(double InCurrentTime, float In
 	}
 
 	// Grab the local player
-	ULocalPlayer* LocalPlayer = LocalPlayerContext.GetLocalPlayer();
-	ULyraIndicatorManagerComponent* IndicatorComponent = IndicatorComponentPtr.Get();
-	if (IndicatorComponent == nullptr)
-	{
-		IndicatorComponent = ULyraIndicatorManagerComponent::GetComponent(LocalPlayerContext.GetPlayerController());
-		if (IndicatorComponent)
-		{
-			// World may have changed
-			IndicatorPool.SetWorld(LocalPlayerContext.GetWorld());
 
-			IndicatorComponentPtr = IndicatorComponent;
-			IndicatorComponent->OnIndicatorAdded.AddSP(this, &SActorCanvas::OnIndicatorAdded);
-			IndicatorComponent->OnIndicatorRemoved.AddSP(this, &SActorCanvas::OnIndicatorRemoved);
-			for (UIndicatorDescriptor* Indicator : IndicatorComponent->GetIndicators())
-			{
-				OnIndicatorAdded(Indicator);
-			}
-		}
-		else
-		{
-			//TODO HIDE EVERYTHING
-			return EActiveTimerReturnType::Continue;
-		}
-	}
 
 	//Make sure we have a player. If we don't, we can't project anything
-	if (LocalPlayer)
+	if (ULocalPlayer* LocalPlayer = LocalPlayerContext.GetLocalPlayer())
 	{
 		const FGeometry PaintGeometry = OptionalPaintGeometry.GetValue();
 

@@ -2,8 +2,9 @@
 
 #pragma once
 
-#include "Messaging/CommonMessagingSubsystem.h"
 #include "Templates/SubclassOf.h"
+
+#include "UI/Messaging/CommonMessagingSubsystem.h"
 
 #include "LyraUIMessaging.generated.h"
 
