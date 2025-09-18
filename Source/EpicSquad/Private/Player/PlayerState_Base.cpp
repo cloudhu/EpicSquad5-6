@@ -10,7 +10,7 @@
 APlayerState_Base::APlayerState_Base(const FObjectInitializer& ObjectInitializer)
 {
 	InventoryManager = CreateDefaultSubobject<UNinjaInventoryManagerComponent>(TEXT("InventoryManager"));
-
+	
 }
 
 UNinjaInventoryManagerComponent* APlayerState_Base::GetInventoryManager_Implementation() const

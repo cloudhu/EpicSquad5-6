@@ -35,7 +35,7 @@ void ULyraHUDLayout::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
 
-	RegisterUIActionBinding(FBindUIActionArgs(FUIActionTag::ConvertChecked(TAG_UI_ACTION_ESCAPE), false, FSimpleDelegate::CreateUObject(this, &ThisClass::HandleEscapeAction)));
+	//RegisterUIActionBinding(FBindUIActionArgs(FUIActionTag::ConvertChecked(TAG_UI_ACTION_ESCAPE), false, FSimpleDelegate::CreateUObject(this, &ThisClass::HandleEscapeAction)));
 
 	// If we can display a controller disconnect screen, then listen for the controller state change delegates
 	if (ShouldPlatformDisplayControllerDisconnectScreen())

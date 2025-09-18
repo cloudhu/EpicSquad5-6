@@ -2,10 +2,9 @@
 
 #pragma once
 
-#include "LyraActivatableWidget.h"
 #include "Containers/Ticker.h"
 #include "GameplayTagContainer.h"
-
+#include "LyraActivatableWidget.h"
 #include "LyraHUDLayout.generated.h"
 
 class UCommonActivatableWidget;
