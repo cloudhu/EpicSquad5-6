@@ -22,6 +22,7 @@ namespace UIGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(UI_Widget_HUD,"UI.Widget.HUD");
 	UE_DEFINE_GAMEPLAY_TAG(UI_Widget_PauseMenu,"UI.Widget.PauseMenu");
 	UE_DEFINE_GAMEPLAY_TAG(UI_Widget_Inventory,"UI.Widget.Inventory");
+	UE_DEFINE_GAMEPLAY_TAG(UI_Widget_ItemActionMenu,"UI.Widget.ItemActionMenu");
 
 	//UI Options Image
 	UE_DEFINE_GAMEPLAY_TAG(UI_Image_Logo,"UI.Image.Logo");
