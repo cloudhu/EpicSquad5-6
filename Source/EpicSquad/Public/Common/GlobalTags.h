@@ -61,3 +61,11 @@ namespace LocomotionTags
 	EPICSQUAD_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(MotionMatching_Stops);
 	
 }
+
+namespace CombatTags
+{
+	EPICSQUAD_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Combat_Ability_Attack_Primary_A);
+	EPICSQUAD_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Combat_Ability_Attack_Primary_B);
+	EPICSQUAD_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Combat_Ability_Attack_Primary_C);
+	
+}

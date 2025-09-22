@@ -62,3 +62,11 @@ namespace LocomotionTags
 	UE_DEFINE_GAMEPLAY_TAG(MotionMatching_Stops,"MotionMatching.Stops");
 	
 }
+
+namespace CombatTags
+{
+	UE_DEFINE_GAMEPLAY_TAG(Combat_Ability_Attack_Primary_A,"Combat.Ability.Attack.Primary.A");
+	UE_DEFINE_GAMEPLAY_TAG(Combat_Ability_Attack_Primary_B,"Combat.Ability.Attack.Primary.B");
+	UE_DEFINE_GAMEPLAY_TAG(Combat_Ability_Attack_Primary_C,"Combat.Ability.Attack.Primary.C");
+	
+}
