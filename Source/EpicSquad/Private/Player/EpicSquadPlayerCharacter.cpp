@@ -7,6 +7,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/ImmersiveComponentBase.h"
 #include "Components/NinjaCombatCharacterMovementComponent.h"
+#include "Components/NinjaCombatComboManagerComponent.h"
 #include "Components/NinjaCombatEquipmentAdapterComponent.h"
 #include "Components/NinjaCombatManagerComponent.h"
 #include "Components/NinjaEquipmentManagerComponent.h"
@@ -30,6 +31,7 @@ AEpicSquadPlayerCharacter::AEpicSquadPlayerCharacter(const FObjectInitializer& O
 	PrimaryActorTick.bStartWithTickEnabled = true;
 
 	CombatManager = CreateDefaultSubobject<UNinjaCombatManagerComponent>("CombatManager");
+	ComboManager = CreateDefaultSubobject<UNinjaCombatComboManagerComponent>("ComboManager");
 
 	ForwardReference = CreateDefaultSubobject<UArrowComponent>("ForwardReference");
 	ForwardReference->ComponentTags.Add(Tag_Combat_Component_ForwardReference.GetTag().GetTagName());
@@ -72,6 +74,11 @@ UAnimInstance* AEpicSquadPlayerCharacter::GetCombatAnimInstance_Implementation()
 UActorComponent* AEpicSquadPlayerCharacter::GetWeaponManagerComponent_Implementation() const
 {
 	return EquipmentWeaponManager;
+}
+
+UActorComponent* AEpicSquadPlayerCharacter::GetComboManagerComponent_Implementation() const
+{
+	return ComboManager;
 }
 
 TArray<UNinjaInputSetupDataAsset*> AEpicSquadPlayerCharacter::GetInputSetups_Implementation() const

@@ -68,5 +68,23 @@ namespace CombatTags
 	UE_DEFINE_GAMEPLAY_TAG(Combat_Ability_Attack_Primary_A,"Combat.Ability.Attack.Primary.A");
 	UE_DEFINE_GAMEPLAY_TAG(Combat_Ability_Attack_Primary_B,"Combat.Ability.Attack.Primary.B");
 	UE_DEFINE_GAMEPLAY_TAG(Combat_Ability_Attack_Primary_C,"Combat.Ability.Attack.Primary.C");
+	UE_DEFINE_GAMEPLAY_TAG(Combat_Ability_Attack_Primary_D,"Combat.Ability.Attack.Primary.D");
+	UE_DEFINE_GAMEPLAY_TAG(Combat_Ability_Attack_Primary_E,"Combat.Ability.Attack.Primary.E");
+	UE_DEFINE_GAMEPLAY_TAG(Combat_Ability_Attack_Primary_F,"Combat.Ability.Attack.Primary.F");
+	
+	UE_DEFINE_GAMEPLAY_TAG(Combat_Ability_Attack_Secondary_A,"Combat.Ability.Attack.Secondary.A");
+	UE_DEFINE_GAMEPLAY_TAG(Combat_Ability_Attack_Secondary_B,"Combat.Ability.Attack.Secondary.B");
+	UE_DEFINE_GAMEPLAY_TAG(Combat_Ability_Attack_Secondary_C,"Combat.Ability.Attack.Secondary.C");
+	UE_DEFINE_GAMEPLAY_TAG(Combat_Ability_Attack_Secondary_D,"Combat.Ability.Attack.Secondary.D");
+	
+	UE_DEFINE_GAMEPLAY_TAG(Combat_Ability_Combo_Primary,"Combat.Ability.Combo.Primary");
+	UE_DEFINE_GAMEPLAY_TAG(Combat_Ability_Combo_Evade,"Combat.Ability.Combo.Evade");
+	UE_DEFINE_GAMEPLAY_TAG(Combat_Ability_Combo_Parry,"Combat.Ability.Combo.Parry");
+	UE_DEFINE_GAMEPLAY_TAG(Combat_Ability_Combo_Riposte,"Combat.Ability.Combo.Riposte");
+	
+	UE_DEFINE_GAMEPLAY_TAG(Combat_Ability_Combo_Secondary,"Combat.Ability.Combo.Secondary");
+	UE_DEFINE_GAMEPLAY_TAG(Combat_Ability_Combo_Cast,"Combat.Ability.Combo.Cast");
+	UE_DEFINE_GAMEPLAY_TAG(Combat_Ability_Combo_Block,"Combat.Ability.Combo.Block");
+	UE_DEFINE_GAMEPLAY_TAG(Combat_Ability_Combo_Opportunity,"Combat.Ability.Combo.Opportunity");
 	
 }

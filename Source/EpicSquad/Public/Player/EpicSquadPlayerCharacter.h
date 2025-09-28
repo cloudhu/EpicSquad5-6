@@ -12,6 +12,7 @@
 #include "EpicSquadPlayerCharacter.generated.h"
 
 
+class UNinjaCombatComboManagerComponent;
 class UNinjaCombatEquipmentAdapterComponent;
 /**
  *  A controllable top-down perspective character
@@ -41,6 +42,9 @@ class EPICSQUAD_API AEpicSquadPlayerCharacter : public ANinjaGASPlayerCharacter,
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UNinjaFactionComponent> FactionManager;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UNinjaCombatComboManagerComponent> ComboManager;
+	
 	// UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = true))
 	// TObjectPtr<UImmersiveComponentBase> ImmersiveInteractionComponent;
 
@@ -59,6 +63,7 @@ public:
 	virtual USkeletalMeshComponent* GetCombatMesh_Implementation() const override;
 	virtual UAnimInstance* GetCombatAnimInstance_Implementation() const override;
 	virtual UActorComponent* GetWeaponManagerComponent_Implementation() const override;
+	virtual UActorComponent* GetComboManagerComponent_Implementation() const override;
 	// -- End CombatSystem implementation
 
 	// -- Begin Input Setup Provider implementation
