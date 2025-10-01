@@ -70,6 +70,7 @@ namespace CombatTags
 	EPICSQUAD_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Combat_Ability_Attack_Primary_D);
 	EPICSQUAD_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Combat_Ability_Attack_Primary_E);
 	EPICSQUAD_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Combat_Ability_Attack_Primary_F);
+	EPICSQUAD_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Combat_Ability_Attack_Primary_G);
 	
 	EPICSQUAD_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Combat_Ability_Attack_Secondary_A);
 	EPICSQUAD_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Combat_Ability_Attack_Secondary_B);

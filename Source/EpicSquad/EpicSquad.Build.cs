@@ -24,6 +24,7 @@ public class EpicSquad : ModuleRules
 			"Niagara",
 			"UMG",
 			"GameplayMessageRuntime",
+			//Ninja Foundation
 			"NinjaGAS",
 			"NinjaInput",
 			// Ninja Combat
@@ -40,6 +41,7 @@ public class EpicSquad : ModuleRules
 			"NinjaCombatInventory",
 			"StructUtils",
 			"NinjaCombatFactions",
+			"TargetingSystem",
 			// Ninja Inventory
 			"NinjaInventory",
 			"NinjaInventoryCore",
@@ -54,7 +56,11 @@ public class EpicSquad : ModuleRules
 			"GameFeatures",			
 			"ReplicationGraph",
 			"PropertyPath",
-			"AsyncMixin"
+			"AsyncMixin",
+			//Ninja Interaction
+			"NinjaInteraction",
+			"NinjaInteractionUI",
+			"SmartObjectsModule",
 		]);
 
 		PrivateDependencyModuleNames.AddRange([

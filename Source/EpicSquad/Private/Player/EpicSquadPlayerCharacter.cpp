@@ -12,6 +12,8 @@
 #include "Components/NinjaCombatManagerComponent.h"
 #include "Components/NinjaEquipmentManagerComponent.h"
 #include "Components/NinjaFactionComponent.h"
+#include "Components/NinjaInteractionManagerComponent.h"
+
 #include "GameFramework/CharacterMovementComponent.h"
 
 AEpicSquadPlayerCharacter::AEpicSquadPlayerCharacter(const FObjectInitializer& ObjectInitializer): Super(
@@ -32,6 +34,7 @@ AEpicSquadPlayerCharacter::AEpicSquadPlayerCharacter(const FObjectInitializer& O
 
 	CombatManager = CreateDefaultSubobject<UNinjaCombatManagerComponent>("CombatManager");
 	ComboManager = CreateDefaultSubobject<UNinjaCombatComboManagerComponent>("ComboManager");
+	InteractionComponent = CreateDefaultSubobject<UNinjaInteractionManagerComponent >("InteractionComponent");
 
 	ForwardReference = CreateDefaultSubobject<UArrowComponent>("ForwardReference");
 	ForwardReference->ComponentTags.Add(Tag_Combat_Component_ForwardReference.GetTag().GetTagName());

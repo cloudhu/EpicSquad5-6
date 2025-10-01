@@ -12,6 +12,7 @@
 #include "EpicSquadPlayerCharacter.generated.h"
 
 
+class UNinjaInteractionManagerComponent;
 class UNinjaCombatComboManagerComponent;
 class UNinjaCombatEquipmentAdapterComponent;
 /**
@@ -45,8 +46,8 @@ class EPICSQUAD_API AEpicSquadPlayerCharacter : public ANinjaGASPlayerCharacter,
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UNinjaCombatComboManagerComponent> ComboManager;
 	
-	// UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = true))
-	// TObjectPtr<UImmersiveComponentBase> ImmersiveInteractionComponent;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = true))
+	TObjectPtr<UNinjaInteractionManagerComponent > InteractionComponent;
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input Setup")

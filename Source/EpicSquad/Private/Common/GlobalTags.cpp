@@ -71,6 +71,7 @@ namespace CombatTags
 	UE_DEFINE_GAMEPLAY_TAG(Combat_Ability_Attack_Primary_D,"Combat.Ability.Attack.Primary.D");
 	UE_DEFINE_GAMEPLAY_TAG(Combat_Ability_Attack_Primary_E,"Combat.Ability.Attack.Primary.E");
 	UE_DEFINE_GAMEPLAY_TAG(Combat_Ability_Attack_Primary_F,"Combat.Ability.Attack.Primary.F");
+	UE_DEFINE_GAMEPLAY_TAG(Combat_Ability_Attack_Primary_G,"Combat.Ability.Attack.Primary.G");
 	
 	UE_DEFINE_GAMEPLAY_TAG(Combat_Ability_Attack_Secondary_A,"Combat.Ability.Attack.Secondary.A");
 	UE_DEFINE_GAMEPLAY_TAG(Combat_Ability_Attack_Secondary_B,"Combat.Ability.Attack.Secondary.B");

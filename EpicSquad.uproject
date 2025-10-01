@@ -66,6 +66,11 @@
 			"MarketplaceURL": "com.epicgames.launcher://ue/Fab/product/da30946a-08c2-4133-9c92-46a5697d7214"
 		},
 		{
+			"Name": "NinjaInteraction",
+			"Enabled": true,
+			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/product/022e2995df0b4cb3af0bf170cbeea776"
+		},
+		{
 			"Name": "CommonUI",
 			"Enabled": true
 		},
@@ -247,6 +252,11 @@
 		{
 			"Name": "SlateModelViewViewModel",
 			"Enabled": true
+		},
+		{
+			"Name": "RGBNodes",
+			"Enabled": true,
+			"MarketplaceURL": "https://www.fab.com/sellers/Driven%20Games"
 		}
 	]
 }
